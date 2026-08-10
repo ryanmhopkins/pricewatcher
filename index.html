@@ -1,1 +1,76 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090a0c"><meta name="robots" content="noindex,nofollow,noarchive"><title>PriceWatcher</title><link rel="icon" href="/icon.svg"><link rel="manifest" href="/manifest.webmanifest"><link rel="stylesheet" href="/style.css?v=16"></head><body><div id="gate" class="gate"><div class="gate-card"><div class="gate-mark">↗</div><p>PRICEWATCHER</p><h1>Open your dashboard</h1><div class="gate-copy">Sign in to your account for your own workspace and subscription.</div><a class="account-entry" href="/account.html">Sign in or create account →</a><div class="gate-divider"><span>private beta access</span></div><form id="login-form"><input id="access-code" autocomplete="one-time-code" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" required><button type="submit">Use beta access code →</button></form><div id="login-msg"></div><div class="gate-links"><a href="/home.html">About</a><a href="/pricing.html">Pricing</a><a href="/faq.html">FAQ</a></div></div></div><main id="app" hidden><header><div class="brand"><span>↗</span> PriceWatcher</div><div class="header-actions"><a class="ghost site-link" href="/home.html">Site</a><span class="plan-badge" id="plan-badge" hidden></span><a class="ghost" id="account-link" href="/account.html">Account</a><button class="ghost" id="export">Export</button><button class="ghost" id="logout">Sign out</button></div></header><section class="hero"><p>COMPETITIVE PRICING INTELLIGENCE</p><h1>Know when your competitors <em>change their pricing.</em></h1><div>Add a SaaS pricing page. PriceWatcher captures a baseline, checks it automatically at your chosen cadence, and surfaces meaningful pricing changes.</div></section><section id="stats" class="stats"><div><b id="stat-active">0</b><span>Active monitors</span></div><div><b id="stat-changes">0</b><span>Changes detected</span></div><div><b id="stat-errors">0</b><span>Needs attention</span></div></section><section class="grid"><div class="card composer"><h2>Add a competitor</h2><small id="plan-copy">First snapshot is captured immediately.</small><form id="form"><label>Name<input id="name" placeholder="Acme" maxlength="120" required></label><label>Pricing URL<input id="url" type="url" placeholder="https://acme.com/pricing" required></label><label>Check frequency<select id="interval"><option value="60">Every hour</option><option value="360">Every 6 hours</option><option value="720">Every 12 hours</option><option value="1440" selected>Daily</option><option value="10080">Weekly</option></select></label><button>Start monitoring →</button></form><div id="msg"></div></div><div class="card monitors-card"><div class="row toolbar"><div><h2>Monitored pages</h2><small id="count">0 competitors</small></div><div class="toolbar-actions"><input id="search" type="search" placeholder="Search"><button class="ghost" id="check-all">Check all</button><button class="ghost" id="refresh">Refresh</button></div></div><div id="list" class="list"></div></div></section></main><script src="/app.js?v=16"></script><script src="/pwa.js?v=1"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090a0c">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>PriceWatcher</title>
+  <link rel="icon" href="/icon.svg">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/style.css?v=16">
+</head>
+<body>
+  <div id="gate" class="gate" hidden>
+    <div class="gate-card">
+      <div class="gate-mark">↗</div>
+      <p>PRICEWATCHER</p>
+      <h1>Open your dashboard</h1>
+      <div class="gate-copy">Sign in to your account for your own workspace and subscription.</div>
+      <a class="account-entry" href="/account.html">Sign in or create account →</a>
+      <div class="gate-divider"><span>private beta access</span></div>
+      <form id="login-form">
+        <input id="access-code" autocomplete="one-time-code" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" required>
+        <button type="submit">Use beta access code →</button>
+      </form>
+      <div id="login-msg"></div>
+      <div class="gate-links"><a href="/home.html">About</a><a href="/pricing.html">Pricing</a><a href="/faq.html">FAQ</a></div>
+    </div>
+  </div>
+
+  <main id="app" hidden>
+    <header>
+      <div class="brand"><span>↗</span> PriceWatcher</div>
+      <div class="header-actions">
+        <a class="ghost site-link" href="/home.html">Site</a>
+        <span class="plan-badge" id="plan-badge" hidden></span>
+        <a class="ghost" id="account-link" href="/account.html">Account</a>
+        <button class="ghost" id="export">Export</button>
+        <button class="ghost" id="logout">Sign out</button>
+      </div>
+    </header>
+    <section class="hero">
+      <p>COMPETITIVE PRICING INTELLIGENCE</p>
+      <h1>Know when your competitors <em>change their pricing.</em></h1>
+      <div>Add a SaaS pricing page. PriceWatcher captures a baseline, checks it automatically at your chosen cadence, and surfaces meaningful pricing changes.</div>
+    </section>
+    <section id="stats" class="stats">
+      <div><b id="stat-active">0</b><span>Active monitors</span></div>
+      <div><b id="stat-changes">0</b><span>Changes detected</span></div>
+      <div><b id="stat-errors">0</b><span>Needs attention</span></div>
+    </section>
+    <section class="grid">
+      <div class="card composer">
+        <h2>Add a competitor</h2>
+        <small id="plan-copy">First snapshot is captured immediately.</small>
+        <form id="form">
+          <label>Name<input id="name" placeholder="Acme" maxlength="120" required></label>
+          <label>Pricing URL<input id="url" type="url" placeholder="https://acme.com/pricing" required></label>
+          <label>Check frequency<select id="interval"><option value="60">Every hour</option><option value="360">Every 6 hours</option><option value="720">Every 12 hours</option><option value="1440" selected>Daily</option><option value="10080">Weekly</option></select></label>
+          <button>Start monitoring →</button>
+        </form>
+        <div id="msg"></div>
+      </div>
+      <div class="card monitors-card">
+        <div class="row toolbar">
+          <div><h2>Monitored pages</h2><small id="count">0 competitors</small></div>
+          <div class="toolbar-actions"><input id="search" type="search" placeholder="Search"><button class="ghost" id="check-all">Check all</button><button class="ghost" id="refresh">Refresh</button></div>
+        </div>
+        <div id="list" class="list"></div>
+      </div>
+    </section>
+  </main>
+  <script src="/app.js?v=17"></script>
+  <script src="/pwa.js?v=1"></script>
+</body>
+</html>
