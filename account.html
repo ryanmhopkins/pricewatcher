@@ -1,1 +1,61 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090a0c"><title>Account — PriceWatcher</title><meta name="description" content="Manage your PriceWatcher account and plan."><link rel="icon" href="/icon.svg"><link rel="stylesheet" href="/marketing.css?v=1"><style>.auth-shell{max-width:520px;margin:70px auto}.auth-card{background:#111217;border:1px solid #30323a;border-radius:22px;padding:28px}.auth-card h1{margin:0 0 8px;font-size:34px}.auth-card p{color:#9fa3ad;line-height:1.55}.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0}.auth-tabs button{background:#1d1f24;color:#cfd2d9}.auth-tabs button.active{background:#f4f4f5;color:#111216}.auth-card label{display:block;font-size:12px;color:#b8bbc4;margin:14px 0}.auth-card input{display:block;width:100%;margin-top:7px;background:#0c0d10;color:#fff;border:1px solid #30323a;border-radius:10px;padding:12px}.auth-card form>button{width:100%;margin-top:8px}.auth-msg{min-height:20px;margin-top:14px;color:#b9bdc7;font-size:12px}.fine{font-size:11px;color:#777c86;margin-top:18px}.account-grid{display:grid;gap:10px;margin:22px 0}.account-row{display:flex;justify-content:space-between;gap:16px;border:1px solid #292c33;background:#0c0d10;border-radius:10px;padding:13px}.account-row span{color:#858994;font-size:11px}.account-row b{font-size:12px;text-align:right}.account-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.account-actions a,.account-actions button{text-align:center;text-decoration:none}.portal-note{margin-top:14px;font-size:11px;color:#777c86}</style></head><body><div class="wrap"><header class="site-header"><a class="logo" href="/home.html"><span>↗</span>PriceWatcher</a><nav class="nav"><a href="/home.html">Home</a><a href="/pricing.html">Pricing</a><a class="cta" href="/">Open app</a></nav></header><main class="auth-shell"><section class="auth-card" id="auth-card"><div class="eyebrow">Account</div><h1 id="title">Sign in</h1><p id="copy">Use your PriceWatcher account to access your own monitors and subscription.</p><div class="auth-tabs"><button id="tab-signin" class="active">Sign in</button><button id="tab-signup">Create account</button></div><form id="auth-form"><label>Email<input id="email" type="email" autocomplete="email" required></label><label>Password<input id="password" type="password" autocomplete="current-password" minlength="8" required></label><button class="btn primary" id="submit" type="submit">Sign in →</button></form><div class="auth-msg" id="auth-msg"></div><div class="fine">Paid subscriptions are matched to the email used at Stripe Checkout. Email confirmation is required for new accounts.</div></section><section class="auth-card" id="member-card" hidden><div class="eyebrow">Your account</div><h1>PriceWatcher account</h1><p>Your subscription controls monitor limits and premium monitoring features.</p><div class="account-grid"><div class="account-row"><span>Email</span><b id="member-email">—</b></div><div class="account-row"><span>Plan</span><b id="member-plan">—</b></div><div class="account-row"><span>Monitors</span><b id="member-usage">—</b></div><div class="account-row"><span>Subscription</span><b id="member-status">—</b></div></div><div class="account-actions"><a class="btn primary" href="/">Open dashboard</a><a class="btn secondary" href="/pricing.html">Change plan</a><button class="btn secondary" id="account-signout">Sign out</button><a class="btn secondary" id="billing-portal" href="https://billing.stripe.com/p/login/eVqbJ10kg4Ub8Bw3H3aEE00">Manage billing</a></div><div class="portal-note" id="portal-note">Manage payment methods, invoices, and subscription changes securely through Stripe.</div></section></main></div><script src="/account.js?v=2"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090a0c">
+  <title>Account — PriceWatcher</title>
+  <meta name="description" content="Create or manage your PriceWatcher account and subscription.">
+  <link rel="icon" href="/icon.svg">
+  <link rel="stylesheet" href="/marketing.css?v=2">
+  <link rel="stylesheet" href="/account.css?v=1">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <a class="logo" href="/home.html"><span>↗</span>PriceWatcher</a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="/home.html">Home</a><a href="/features.html">Features</a><a href="/pricing.html">Pricing</a><a href="/faq.html">FAQ</a><a class="cta" href="/">Open app</a>
+      </nav>
+    </header>
+    <main class="account-page">
+      <section class="account-intro" aria-labelledby="account-heading">
+        <div class="eyebrow">Your competitive edge</div>
+        <h1 id="account-heading">Pricing intelligence starts here.</h1>
+        <p class="lead">Create a private workspace for your competitor monitors, change history, alerts, and subscription.</p>
+        <div class="account-benefits" aria-label="PriceWatcher benefits">
+          <div><span>01</span><p><b>Track the right pages.</b> Keep every competitor and pricing URL organized in one workspace.</p></div>
+          <div><span>02</span><p><b>See meaningful changes.</b> Separate pricing signals from routine page edits.</p></div>
+          <div><span>03</span><p><b>Act while it matters.</b> Review history and send alerts to the tools your team already uses.</p></div>
+        </div>
+        <p class="account-trust">Secure authentication by Supabase · Billing by Stripe</p>
+      </section>
+      <section class="auth-card" id="auth-card" aria-labelledby="auth-title">
+        <div class="eyebrow">PriceWatcher account</div>
+        <h2 id="auth-title">Welcome back</h2>
+        <p id="auth-copy">Sign in to open your monitoring workspace.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Account action">
+          <button id="tab-signin" class="active" type="button" role="tab" aria-selected="true">Sign in</button>
+          <button id="tab-signup" type="button" role="tab" aria-selected="false">Create account</button>
+        </div>
+        <form id="auth-form">
+          <label for="email">Email address</label>
+          <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" required>
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required>
+          <button class="btn primary auth-submit" id="submit" type="submit"><span id="submit-label">Sign in</span><span aria-hidden="true">→</span></button>
+        </form>
+        <div class="auth-msg" id="auth-msg" role="status" aria-live="polite"></div>
+        <p class="auth-fineprint">New accounts require email confirmation. If you purchased a plan, use the same email address from Stripe Checkout.</p>
+      </section>
+      <section class="auth-card member-card" id="member-card" aria-labelledby="member-title" hidden>
+        <div class="eyebrow">Your workspace</div><h2 id="member-title">Account overview</h2><p>Your plan controls monitor limits and premium monitoring features.</p>
+        <div class="account-grid"><div class="account-row"><span>Email</span><b id="member-email">—</b></div><div class="account-row"><span>Plan</span><b id="member-plan">—</b></div><div class="account-row"><span>Monitors</span><b id="member-usage">—</b></div><div class="account-row"><span>Subscription</span><b id="member-status">—</b></div></div>
+        <div class="account-actions"><a class="btn primary" href="/">Open dashboard</a><a class="btn secondary" href="/pricing.html">Change plan</a><a class="btn secondary" id="billing-portal" href="https://billing.stripe.com/p/login/eVqbJ10kg4Ub8Bw3H3aEE00">Manage billing</a><button class="btn secondary" id="account-signout" type="button">Sign out</button></div>
+        <p class="portal-note">Payment methods, invoices, and subscription changes are managed securely through Stripe.</p>
+      </section>
+    </main>
+  </div>
+  <script src="/account.js?v=3"></script>
+</body>
+</html>

@@ -1,14 +1,176 @@
-const U='https://hmsldwpcaupanooestfr.supabase.co',EDGE='https://hmsldwpcaupanooestfr.supabase.co/functions/v1/pricewatcher-api',KEY='sb_publishable_QCWt9V-_up-ePCszAB9S1A_k2-bPOQj',CALLBACK='https://pricewatcher-nu.vercel.app/account.html';
-let mode='signin',accessToken=localStorage.getItem('pw_access_token')||'',refreshToken=localStorage.getItem('pw_refresh_token')||'';const $=s=>document.querySelector(s),msg=$('#auth-msg'),qs=new URLSearchParams(location.search),purchased=qs.get('checkout')==='success',purchasedPlan=qs.get('plan');
-function setMode(m){mode=m;$('#tab-signin').classList.toggle('active',m==='signin');$('#tab-signup').classList.toggle('active',m==='signup');$('#title').textContent=m==='signin'?'Sign in':'Create account';$('#copy').textContent=m==='signin'?'Use your PriceWatcher account to access your own monitors and subscription.':'Create an account to get your own workspace. New accounts start on Free unless a matching Stripe subscription exists.';$('#submit').textContent=m==='signin'?'Sign in →':'Create account →';$('#password').autocomplete=m==='signin'?'current-password':'new-password';if(!purchased)msg.textContent=''}
-function store(d){if(d?.access_token){accessToken=d.access_token;localStorage.setItem('pw_access_token',d.access_token)}if(d?.refresh_token){refreshToken=d.refresh_token;localStorage.setItem('pw_refresh_token',d.refresh_token)}if(d?.expires_at)localStorage.setItem('pw_access_expires_at',String(d.expires_at))}
-function clear(){['pw_access_token','pw_refresh_token','pw_access_expires_at'].forEach(k=>localStorage.removeItem(k));accessToken='';refreshToken=''}
-async function call(path,body){const r=await fetch(`${U}${path}`,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)}),text=await r.text();let d={};try{d=JSON.parse(text)}catch{}if(!r.ok)throw new Error(d.msg||d.message||d.error_description||d.error||`Request failed (${r.status})`);return d}
-async function refresh(){if(!refreshToken)return false;try{store(await call('/auth/v1/token?grant_type=refresh_token',{refresh_token:refreshToken}));return true}catch{return false}}
-async function accountRequest(retry=true){const r=await fetch(EDGE,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:'account',access_token:accessToken})}),d=await r.json().catch(()=>({}));if(r.status===401&&retry&&await refresh())return accountRequest(false);if(!r.ok)throw new Error(d.error||'Unable to load account');return d}
-async function showMember(){try{const a=await accountRequest();$('#auth-card').hidden=true;$('#member-card').hidden=false;$('#member-email').textContent=a.email||'—';$('#member-plan').textContent=String(a.plan||'free').replace(/^./,x=>x.toUpperCase());$('#member-usage').textContent=`${a.monitor_count||0} / ${a.limit||0}`;$('#member-status').textContent=a.subscription_status||((a.plan||'free')==='free'?'Free':'Active')}catch{clear();$('#auth-card').hidden=false;$('#member-card').hidden=true}}
-const hash=new URLSearchParams(location.hash.slice(1));if(hash.get('access_token')){store({access_token:hash.get('access_token'),refresh_token:hash.get('refresh_token'),expires_at:Math.floor(Date.now()/1000)+Number(hash.get('expires_in')||3600)});history.replaceState(null,'',location.pathname+location.search);showMember()}
-$('#tab-signin').onclick=()=>setMode('signin');$('#tab-signup').onclick=()=>setMode('signup');
-$('#auth-form').onsubmit=async e=>{e.preventDefault();const b=$('#submit');b.disabled=true;msg.textContent=mode==='signin'?'Signing in…':'Creating account…';try{const email=$('#email').value.trim(),password=$('#password').value;if(mode==='signin'){store(await call('/auth/v1/token?grant_type=password',{email,password}));await showMember()}else{const d=await call(`/auth/v1/signup?redirect_to=${encodeURIComponent(CALLBACK)}`,{email,password});if(d.access_token){store(d);await showMember()}else{msg.textContent='Account created. Check your email to confirm your address, then return here to sign in. Use the same email you used at Stripe Checkout so your paid plan attaches automatically.'}}catch(err){msg.textContent=err.message||'Unable to continue.'}finally{b.disabled=false}};
-$('#account-signout').onclick=async()=>{try{await fetch(`${U}/auth/v1/logout`,{method:'POST',headers:{apikey:KEY,Authorization:`Bearer ${accessToken}`}})}catch{}clear();$('#member-card').hidden=true;$('#auth-card').hidden=false;setMode('signin')};
-if(accessToken)showMember();else if(purchased){setMode('signup');msg.textContent=`Payment received${purchasedPlan?` for ${purchasedPlan[0].toUpperCase()+purchasedPlan.slice(1)}`:''}. Create your PriceWatcher account using the same email address you used at checkout.`}
+const SUPABASE_URL = 'https://hmsldwpcaupanooestfr.supabase.co';
+const EDGE_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-api`;
+const PUBLISHABLE_KEY = 'sb_publishable_QCWt9V-_up-ePCszAB9S1A_k2-bPOQj';
+const CALLBACK_URL = 'https://pricewatcher-nu.vercel.app/account.html';
+
+let mode = 'signin';
+let accessToken = localStorage.getItem('pw_access_token') || '';
+let refreshToken = localStorage.getItem('pw_refresh_token') || '';
+const $ = (selector) => document.querySelector(selector);
+const authCard = $('#auth-card');
+const memberCard = $('#member-card');
+const message = $('#auth-msg');
+const params = new URLSearchParams(location.search);
+const purchased = params.get('checkout') === 'success';
+const purchasedPlan = params.get('plan');
+
+function setMessage(text, type = '') {
+  message.textContent = text;
+  message.className = `auth-msg${type ? ` ${type}` : ''}`;
+}
+
+function setMode(nextMode) {
+  mode = nextMode;
+  const signingIn = mode === 'signin';
+  const signInTab = $('#tab-signin');
+  const signUpTab = $('#tab-signup');
+  signInTab.classList.toggle('active', signingIn);
+  signUpTab.classList.toggle('active', !signingIn);
+  signInTab.setAttribute('aria-selected', String(signingIn));
+  signUpTab.setAttribute('aria-selected', String(!signingIn));
+  $('#auth-title').textContent = signingIn ? 'Welcome back' : 'Create your workspace';
+  $('#auth-copy').textContent = signingIn ? 'Sign in to open your monitoring workspace.' : 'Start with three free monitors. No credit card required.';
+  $('#submit-label').textContent = signingIn ? 'Sign in' : 'Create account';
+  $('#password').autocomplete = signingIn ? 'current-password' : 'new-password';
+  if (!purchased) setMessage('');
+}
+
+function storeSession(data) {
+  if (data?.access_token) {
+    accessToken = data.access_token;
+    localStorage.setItem('pw_access_token', data.access_token);
+  }
+  if (data?.refresh_token) {
+    refreshToken = data.refresh_token;
+    localStorage.setItem('pw_refresh_token', data.refresh_token);
+  }
+  if (data?.expires_at) localStorage.setItem('pw_access_expires_at', String(data.expires_at));
+}
+
+function clearSession() {
+  ['pw_access_token', 'pw_refresh_token', 'pw_access_expires_at'].forEach((key) => localStorage.removeItem(key));
+  accessToken = '';
+  refreshToken = '';
+}
+
+async function authRequest(path, body) {
+  let response;
+  try {
+    response = await fetch(`${SUPABASE_URL}${path}`, {
+      method: 'POST',
+      headers: { apikey: PUBLISHABLE_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error('Unable to reach the sign-in service. Check your connection and try again.');
+  }
+  const text = await response.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    // Use the status-based fallback below if the service returns non-JSON.
+  }
+  if (!response.ok) throw new Error(data.msg || data.message || data.error_description || data.error || `Request failed (${response.status})`);
+  return data;
+}
+
+async function refreshSession() {
+  if (!refreshToken) return false;
+  try {
+    storeSession(await authRequest('/auth/v1/token?grant_type=refresh_token', { refresh_token: refreshToken }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function accountRequest(retry = true) {
+  const response = await fetch(EDGE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+    body: JSON.stringify({ action: 'account', access_token: accessToken }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401 && retry && await refreshSession()) return accountRequest(false);
+  if (!response.ok) throw new Error(data.error || 'Unable to load your account.');
+  return data;
+}
+
+function showAuth() {
+  memberCard.hidden = true;
+  authCard.hidden = false;
+}
+
+async function showMember() {
+  try {
+    const account = await accountRequest();
+    authCard.hidden = true;
+    memberCard.hidden = false;
+    $('#member-email').textContent = account.email || '—';
+    $('#member-plan').textContent = String(account.plan || 'free').replace(/^./, (letter) => letter.toUpperCase());
+    $('#member-usage').textContent = `${account.monitor_count || 0} / ${account.limit || 0}`;
+    $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
+  } catch {
+    clearSession();
+    showAuth();
+    setMessage('Your session has expired. Sign in again to continue.', 'error');
+  }
+}
+
+const hash = new URLSearchParams(location.hash.slice(1));
+if (hash.get('access_token')) {
+  storeSession({ access_token: hash.get('access_token'), refresh_token: hash.get('refresh_token'), expires_at: Math.floor(Date.now() / 1000) + Number(hash.get('expires_in') || 3600) });
+  history.replaceState(null, '', location.pathname + location.search);
+  showMember();
+}
+
+$('#tab-signin').addEventListener('click', () => setMode('signin'));
+$('#tab-signup').addEventListener('click', () => setMode('signup'));
+
+$('#auth-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = $('#submit');
+  const email = $('#email').value.trim();
+  const password = $('#password').value;
+  button.disabled = true;
+  setMessage(mode === 'signin' ? 'Signing in…' : 'Creating your account…', 'loading');
+  try {
+    if (mode === 'signin') {
+      storeSession(await authRequest('/auth/v1/token?grant_type=password', { email, password }));
+      await showMember();
+    } else {
+      const data = await authRequest(`/auth/v1/signup?redirect_to=${encodeURIComponent(CALLBACK_URL)}`, { email, password });
+      if (data.access_token) {
+        storeSession(data);
+        await showMember();
+      } else {
+        setMessage('Account created. Check your inbox to confirm your email, then return here to sign in.', 'success');
+      }
+    }
+  } catch (error) {
+    setMessage(error.message || 'Unable to continue. Please try again.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#account-signout').addEventListener('click', async () => {
+  try {
+    await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: 'POST', headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}` } });
+  } catch {
+    // Clear the local session even if remote sign-out is unavailable.
+  }
+  clearSession();
+  showAuth();
+  setMode('signin');
+  setMessage('You have been signed out.', 'success');
+});
+
+if (accessToken) {
+  showMember();
+} else if (purchased) {
+  setMode('signup');
+  const planName = purchasedPlan ? ` for ${purchasedPlan[0].toUpperCase()}${purchasedPlan.slice(1)}` : '';
+  setMessage(`Payment received${planName}. Create your account using the same email address you used at checkout.`, 'success');
+}
