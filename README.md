@@ -1,28 +1,26 @@
 # PriceWatcher — zero-dependency MVP
 
-Single-purpose Micro-SaaS: watch SaaS pricing pages and alert when pricing-relevant content changes.
+Single-purpose Micro-SaaS: watch SaaS pricing pages and surface pricing-relevant changes.
 
-## Deploy
-1. Create a Supabase project.
-2. Run `supabase/schema.sql` in its SQL editor.
-3. Push this folder to GitHub.
-4. Import the repo into Vercel (Framework Preset: Other).
-5. Add `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`) and `SUPABASE_SERVICE_ROLE_KEY` environment variables.
-6. Optional email alerts: add `RESEND_API_KEY`, `ALERT_FROM_EMAIL`, `ALERT_TO_EMAIL`.
-7. Add `CRON_SECRET` in Vercel. Vercel sends it as a Bearer token to cron routes.
-
-No npm install or build command is required.
+## Current architecture
+- Static dashboard + lightweight Vercel API routes.
+- Supabase Postgres stores monitors, snapshots, and detected changes.
+- `pricewatcher-api` Supabase Edge Function performs privileged database operations and pricing-page checks.
+- Database tables have RLS enabled with no public policies; direct anon/browser table access is blocked.
+- `pricewatcher-cron` Supabase Edge Function performs scheduled batch checks and rate-limits repeated invocations.
+- Supabase `pg_cron` runs the daily check at 13:00 UTC.
+- No Vercel environment variables or npm dependencies are required for the private-beta build.
 
 ## MVP behavior
 - Add competitor + pricing URL.
 - First snapshot is captured immediately.
-- Daily cron rechecks every monitor.
-- Only normalized pricing-relevant text is hashed.
+- Daily scheduled check rechecks every monitor.
+- Pricing-relevant text is normalized and hashed.
 - Changed content creates a line-level added/removed diff.
-- Optional Resend email sends the detected diff.
+- Manual “Check now” is available from the dashboard.
 
 ## Deliberately not in v0.1
-Authentication, billing, teams, AI summaries, browser rendering, queues, and advanced anti-noise rules.
+Authentication, billing, teams, email notifications, AI summaries, browser rendering, queues, and advanced anti-noise rules.
 
 ## Before public launch
-Add authentication/workspace ownership and SSRF protections. Some JS-heavy pricing pages will need a browser-rendering scraper later; the zero-dependency crawler is intentionally the fastest private-beta implementation.
+Add authentication/workspace ownership and stricter multi-tenant authorization. Some JavaScript-heavy pricing pages will eventually need a browser-rendering scraper. Add email notifications once a transactional email provider/domain is configured.
