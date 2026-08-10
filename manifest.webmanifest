@@ -1,0 +1,12 @@
+{
+  "name": "PriceWatcher",
+  "short_name": "PriceWatcher",
+  "description": "Monitor SaaS pricing pages and detect meaningful pricing changes.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090a0c",
+  "theme_color": "#090a0c",
+  "icons": [
+    {"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
