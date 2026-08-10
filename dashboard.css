@@ -23,4 +23,5 @@
 .account-dropdown>a:hover,.account-dropdown>button:hover,.account-dropdown>a:focus-visible,.account-dropdown>button:focus-visible{background:#202229;color:#fff;outline:none}
 .account-dropdown>a span,.account-dropdown>a small{display:block}.account-dropdown>a small{margin-top:3px;color:#707580;font-size:9px;font-weight:500}
 .account-dropdown>button{color:#a4a8b1}
+.header-actions>.site-link{min-height:40px;padding:12px 14px;border-radius:10px;align-items:center}
 @media(max-width:600px){.pricing-overview-head{align-items:flex-start;flex-direction:column}.price-points{grid-template-columns:repeat(2,minmax(0,1fr))}.empty-pricing{align-items:flex-start;flex-direction:column}.empty-pricing p{text-align:left}}
