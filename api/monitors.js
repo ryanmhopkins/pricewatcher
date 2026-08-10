@@ -1,2 +1,14 @@
-import { insert, runCheck, select, update } from '../lib/core.mjs';
-export default async function handler(req,res){try{if(req.method==='GET'){const m=await select('monitors?select=*&order=created_at.desc'),c=await select('changes?select=*&order=created_at.desc');return res.status(200).json(m.map(x=>({...x,changes:c.filter(y=>y.monitor_id===x.id)})))}if(req.method==='POST'){const{name,url}=req.body||{};if(!name||!url)return res.status(400).json({error:'Name and URL required'});new URL(url);const row=await insert('monitors',{name:String(name).trim(),url:String(url).trim()});try{await runCheck(row.id)}catch(e){await update('monitors',`id=eq.${encodeURIComponent(row.id)}`,{last_status:'error'});return res.status(201).json({...row,warning:e.message})}return res.status(201).json(row)}res.status(405).json({error:'Method not allowed'})}catch(e){res.status(500).json({error:e.message})}}
+import { createMonitor, listMonitors } from '../lib/core.mjs';
+export default async function handler(req,res){
+  try{
+    if(req.method==='GET')return res.status(200).json(await listMonitors());
+    if(req.method==='POST'){
+      const{name,url}=req.body||{};
+      if(!name||!url)return res.status(400).json({error:'Name and URL required'});
+      new URL(url);
+      const row=await createMonitor(String(name).trim(),String(url).trim());
+      return res.status(row?.warning?201:201).json(row);
+    }
+    return res.status(405).json({error:'Method not allowed'});
+  }catch(e){return res.status(500).json({error:e.message})}
+}
