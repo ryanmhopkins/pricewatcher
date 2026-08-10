@@ -1,2 +1,6 @@
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /app
+Disallow: /account.html
+
+Sitemap: https://pricewatcher-nu.vercel.app/sitemap.xml

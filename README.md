@@ -3,13 +3,13 @@
 Single-purpose Micro-SaaS: watch SaaS pricing pages and surface pricing-relevant changes.
 
 ## Current architecture
-- Static dashboard + lightweight Vercel API routes.
+- Public marketing site and authenticated static dashboard hosted by Vercel.
 - Supabase Postgres stores monitors, snapshots, and detected changes.
 - `pricewatcher-api` Supabase Edge Function performs privileged database operations and pricing-page checks.
 - Database tables have RLS enabled with no public policies; direct anon/browser table access is blocked.
 - `pricewatcher-cron` Supabase Edge Function performs scheduled batch checks and rate-limits repeated invocations.
 - Supabase `pg_cron` runs the daily check at 13:00 UTC.
-- No Vercel environment variables or npm dependencies are required for the private-beta build.
+- Supabase Auth provides account access; Stripe Checkout and the customer portal provide subscription billing.
 
 ## MVP behavior
 - Add competitor + pricing URL.
@@ -19,8 +19,8 @@ Single-purpose Micro-SaaS: watch SaaS pricing pages and surface pricing-relevant
 - Changed content creates a line-level added/removed diff.
 - Manual “Check now” is available from the dashboard.
 
-## Deliberately not in v0.1
-Authentication, billing, teams, email notifications, AI summaries, browser rendering, queues, and advanced anti-noise rules.
+## Current limitations
+Email notifications, teams, browser rendering, queues, and advanced anti-noise rules are not yet included.
 
-## Before public launch
-Add authentication/workspace ownership and stricter multi-tenant authorization. Some JavaScript-heavy pricing pages will eventually need a browser-rendering scraper. Add email notifications once a transactional email provider/domain is configured.
+## Operations
+The public site is served at `/`, while the authenticated dashboard is served at `/app`. Some JavaScript-heavy pricing pages may eventually need a browser-rendering scraper. Add email notifications once a transactional email provider and domain are configured.
