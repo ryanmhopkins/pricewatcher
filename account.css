@@ -33,5 +33,12 @@
 .account-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .account-actions .btn{text-align:center;border:0;cursor:pointer}
 .auth-card .portal-note{margin-top:15px;color:#686d78;font-size:10px;text-align:center}
+.settings-sections{display:grid;gap:10px;margin:22px 0}
+.settings-section{border:1px solid #292c33;background:#0b0c0f;border-radius:12px;padding:15px}
+.settings-section h3{font-size:13px;margin:0 0 4px}.settings-section>div>p{font-size:10px;color:#747985;margin:0;line-height:1.45}
+.settings-form{margin-top:14px}.settings-form label{margin-bottom:7px}.settings-form input{margin-bottom:10px}
+.settings-control{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.settings-control input{margin:0}.settings-control .btn{white-space:nowrap;padding:13px 14px}
+.settings-msg{min-height:16px;margin-top:9px;font-size:10px;color:#9ca1ab}.settings-msg.success{color:#9ee6b4}.settings-msg.error{color:#fca5a5}
+.billing-section{display:flex;align-items:center;justify-content:space-between;gap:18px}.billing-actions{display:flex;gap:7px;flex:0 0 auto}.billing-actions .btn{text-align:center;white-space:nowrap}
 @media(max-width:900px){.account-page{grid-template-columns:1fr;gap:42px;min-height:auto;padding:54px 0 70px}.account-intro{max-width:680px}.account-intro h1{font-size:48px}.auth-card,.member-card{grid-column:1;max-width:540px}}
-@media(max-width:500px){.account-page{padding-top:40px;gap:32px}.account-intro h1{font-size:40px}.account-benefits{margin-top:28px}.auth-card{padding:22px;border-radius:17px}.account-actions{grid-template-columns:1fr}}
+@media(max-width:500px){.account-page{padding-top:40px;gap:32px}.account-intro h1{font-size:40px}.account-benefits{margin-top:28px}.auth-card{padding:22px;border-radius:17px}.account-actions{grid-template-columns:1fr}.settings-control{grid-template-columns:1fr}.settings-control .btn{width:100%}.billing-section{align-items:flex-start;flex-direction:column}.billing-actions{display:grid;width:100%;grid-template-columns:1fr 1fr}}

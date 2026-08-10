@@ -10,4 +10,17 @@
 .price-point b{display:block;color:#f0f2f5;font-size:13px;line-height:1.25;margin-top:4px;overflow-wrap:anywhere}
 .empty-pricing{display:flex;justify-content:space-between;gap:16px;align-items:center;background:#0f1013;border-color:#292c33}
 .empty-pricing>div{display:grid;gap:3px}.empty-pricing b{font-size:11px}.empty-pricing p{margin:0;color:#707580;font-size:9px;text-align:right}
+.account-menu{position:relative;padding:8px 0}
+.account-menu-trigger{display:flex;align-items:center;gap:7px}
+.account-menu-trigger span{color:#737883;font-size:13px;transition:transform .15s}
+.account-dropdown{position:absolute;z-index:30;right:0;top:calc(100% - 3px);width:230px;padding:7px;background:#121318;border:1px solid #30333b;border-radius:12px;box-shadow:0 20px 55px rgba(0,0,0,.45);opacity:0;visibility:hidden;transform:translateY(-5px);transition:opacity .15s,transform .15s,visibility .15s}
+.account-menu:hover .account-dropdown,.account-menu:focus-within .account-dropdown{opacity:1;visibility:visible;transform:translateY(0)}
+.account-menu:hover .account-menu-trigger span,.account-menu:focus-within .account-menu-trigger span{transform:rotate(180deg)}
+.account-plan-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px 11px;border-bottom:1px solid #282b32;margin-bottom:5px}
+.account-plan-row>span:first-child{font-size:9px;color:#777c86;text-transform:uppercase;letter-spacing:.1em}
+.account-plan-row .plan-badge{display:inline-block!important}
+.account-dropdown>a,.account-dropdown>button{display:block;width:100%;min-height:auto;padding:10px;border:0;border-radius:8px;background:transparent;color:#cdd0d6;text-decoration:none;text-align:left;font:inherit;font-size:11px;font-weight:750}
+.account-dropdown>a:hover,.account-dropdown>button:hover,.account-dropdown>a:focus-visible,.account-dropdown>button:focus-visible{background:#202229;color:#fff;outline:none}
+.account-dropdown>a span,.account-dropdown>a small{display:block}.account-dropdown>a small{margin-top:3px;color:#707580;font-size:9px;font-weight:500}
+.account-dropdown>button{color:#a4a8b1}
 @media(max-width:600px){.pricing-overview-head{align-items:flex-start;flex-direction:column}.price-points{grid-template-columns:repeat(2,minmax(0,1fr))}.empty-pricing{align-items:flex-start;flex-direction:column}.empty-pricing p{text-align:left}}

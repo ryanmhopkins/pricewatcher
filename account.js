@@ -97,6 +97,29 @@ async function accountRequest(retry = true) {
   return data;
 }
 
+async function updateAuthUser(body, retry = true) {
+  let response;
+  try {
+    response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error('Unable to reach the account service. Check your connection and try again.');
+  }
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401 && retry && await refreshSession()) return updateAuthUser(body, false);
+  if (!response.ok) throw new Error(data.msg || data.message || data.error_description || data.error || 'Unable to update your account.');
+  return data;
+}
+
+function setSettingsMessage(selector, text, type = '') {
+  const element = $(selector);
+  element.textContent = text;
+  element.className = `settings-msg${type ? ` ${type}` : ''}`;
+}
+
 function showAuth() {
   memberCard.hidden = true;
   authCard.hidden = false;
@@ -108,6 +131,7 @@ async function showMember() {
     authCard.hidden = true;
     memberCard.hidden = false;
     $('#member-email').textContent = account.email || '—';
+    $('#settings-email').value = account.email || '';
     $('#member-plan').textContent = String(account.plan || 'free').replace(/^./, (letter) => letter.toUpperCase());
     $('#member-usage').textContent = `${account.monitor_count || 0} / ${account.limit || 0}`;
     $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
@@ -150,6 +174,49 @@ $('#auth-form').addEventListener('submit', async (event) => {
     }
   } catch (error) {
     setMessage(error.message || 'Unable to continue. Please try again.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#email-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button');
+  const email = $('#settings-email').value.trim();
+  button.disabled = true;
+  setSettingsMessage('#email-msg', 'Updating your email…');
+  try {
+    const user = await updateAuthUser({ email });
+    if (user.new_email || (user.email && user.email !== email)) {
+      setSettingsMessage('#email-msg', `Confirmation sent to ${email}. Your current email stays active until the change is confirmed.`, 'success');
+    } else {
+      $('#member-email').textContent = user.email || email;
+      setSettingsMessage('#email-msg', 'Email updated.', 'success');
+    }
+  } catch (error) {
+    setSettingsMessage('#email-msg', error.message || 'Unable to update your email.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#password-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button');
+  const password = $('#new-password').value;
+  const confirmation = $('#confirm-password').value;
+  if (password !== confirmation) {
+    setSettingsMessage('#password-msg', 'The passwords do not match.', 'error');
+    return;
+  }
+  button.disabled = true;
+  setSettingsMessage('#password-msg', 'Updating your password…');
+  try {
+    await updateAuthUser({ password });
+    event.currentTarget.reset();
+    setSettingsMessage('#password-msg', 'Password updated successfully.', 'success');
+  } catch (error) {
+    setSettingsMessage('#password-msg', error.message || 'Unable to update your password.', 'error');
   } finally {
     button.disabled = false;
   }

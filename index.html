@@ -32,11 +32,16 @@
     <header>
       <div class="brand"><span>↗</span> PriceWatcher</div>
       <div class="header-actions">
-        <a class="ghost site-link" href="/home.html">Site</a>
-        <span class="plan-badge" id="plan-badge" hidden></span>
-        <a class="ghost" id="account-link" href="/account.html">Account</a>
+        <a class="ghost site-link" href="/home.html">Home</a>
         <button class="ghost" id="export">Export</button>
-        <button class="ghost" id="logout">Sign out</button>
+        <div class="account-menu">
+          <button class="ghost account-menu-trigger" type="button" aria-haspopup="true">Account <span aria-hidden="true">⌄</span></button>
+          <div class="account-dropdown" role="menu">
+            <div class="account-plan-row"><span>Current plan</span><span class="plan-badge" id="plan-badge" hidden></span></div>
+            <a id="account-link" href="/account.html#settings" role="menuitem"><span>Settings</span><small>Email, password & billing</small></a>
+            <button id="logout" type="button" role="menuitem">Sign out</button>
+          </div>
+        </div>
       </div>
     </header>
     <section class="hero">
