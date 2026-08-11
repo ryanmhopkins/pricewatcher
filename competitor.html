@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090a0c">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Competitor · PlanSentry</title>
+  <link rel="icon" href="/icon.svg">
+  <link rel="stylesheet" href="/style.css?v=16">
+  <link rel="stylesheet" href="/price-history.css?v=1">
+  <link rel="stylesheet" href="/competitor.css?v=1">
+</head>
+<body>
+  <div id="gate" class="detail-gate" hidden>
+    <div><span class="detail-mark">↗</span><p>PLANSENTRY</p><h1>Sign in to view this competitor</h1><a href="/account.html">Sign in or create account →</a></div>
+  </div>
+  <main id="detail-app" hidden>
+    <header class="detail-nav">
+      <a class="detail-brand" href="/app"><span>↗</span> PlanSentry</a>
+      <div><a class="detail-button" href="/app">Dashboard</a><a class="detail-button" href="/account.html#settings">Account</a></div>
+    </header>
+    <section class="detail-hero">
+      <div>
+        <a class="detail-back" href="/app">← All competitors</a>
+        <p>COMPETITOR PROFILE</p>
+        <h1 id="competitor-name">Loading…</h1>
+        <a id="competitor-url" class="detail-url" href="#" target="_blank" rel="noopener"></a>
+      </div>
+      <div class="detail-hero-actions"><span id="competitor-status" class="detail-status">Loading</span><button id="check-now" class="detail-primary">Check now</button></div>
+    </section>
+    <div id="detail-message" role="status"></div>
+    <section id="detail-stats" class="detail-stats"></section>
+    <section class="detail-layout">
+      <div class="detail-main">
+        <section class="detail-card"><div class="section-heading"><div><span>CURRENT PRICING</span><h2>Detected plans</h2></div><small id="pricing-captured"></small></div><div id="current-pricing"></div></section>
+        <section class="detail-card"><div class="section-heading"><div><span>PRICE HISTORY</span><h2>How plans have moved</h2></div></div><div id="price-history"></div></section>
+        <section class="detail-card"><div class="section-heading"><div><span>RECENT ACTIVITY</span><h2>Pricing changes</h2></div><a href="/changes.html">Open change feed →</a></div><div id="recent-changes"></div></section>
+      </div>
+      <aside class="detail-side">
+        <section class="detail-card"><div class="section-heading"><div><span>MONITOR HEALTH</span><h2>Coverage</h2></div></div><div id="monitor-health"></div></section>
+        <section class="detail-card"><div class="section-heading"><div><span>PRIVATE NOTES</span><h2>Competitive context</h2></div></div><p class="notes-help">Capture positioning, packaging, or follow-up context for your team.</p><textarea id="notes" maxlength="2000" placeholder="What matters about this competitor?"></textarea><div class="notes-footer"><span id="notes-count">0 / 2000</span><button id="save-notes" class="detail-primary">Save notes</button></div></section>
+      </aside>
+    </section>
+  </main>
+  <script src="/competitor.js?v=1"></script>
+</body>
+</html>
