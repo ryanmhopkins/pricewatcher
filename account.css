@@ -20,6 +20,7 @@
 .auth-card input:focus{border-color:#777e8d;box-shadow:0 0 0 3px rgba(119,126,141,.14)}
 .auth-submit{appearance:none;border:0;width:100%;display:flex;justify-content:space-between;align-items:center;margin-top:2px;padding:13px 15px;cursor:pointer}
 .auth-submit:disabled{opacity:.58;cursor:wait}
+.auth-link{appearance:none;border:0;background:transparent;color:#8f949f;padding:0;margin:12px 0 0;font:inherit;font-size:11px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.auth-link:hover{color:#fff}.auth-link:disabled{opacity:.55;cursor:wait}
 .auth-msg{min-height:20px;margin-top:15px;font-size:12px;line-height:1.5;color:#aeb2bb}
 .auth-msg.error{color:#fca5a5}
 .auth-msg.success{color:#9ee6b4}
