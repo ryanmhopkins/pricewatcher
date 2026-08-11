@@ -1,5 +1,6 @@
 const SUPABASE_URL = 'https://hmsldwpcaupanooestfr.supabase.co';
 const EDGE_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-api`;
+const EMAIL_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-email`;
 const PUBLISHABLE_KEY = 'sb_publishable_QCWt9V-_up-ePCszAB9S1A_k2-bPOQj';
 const CALLBACK_URL = 'https://pricewatcher-nu.vercel.app/account.html';
 
@@ -97,6 +98,19 @@ async function accountRequest(retry = true) {
   return data;
 }
 
+
+async function emailRequest(action, payload = {}, retry = true) {
+  const response = await fetch(EMAIL_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+    body: JSON.stringify({ action, ...payload, access_token: accessToken }),
+  });
+  const data = await response.json().catch(() => ({}));
+  if (response.status === 401 && retry && await refreshSession()) return emailRequest(action, payload, false);
+  if (!response.ok) throw new Error(data.error || 'Unable to update email alerts.');
+  return data;
+}
+
 async function updateAuthUser(body, retry = true) {
   let response;
   try {
@@ -135,6 +149,8 @@ async function showMember(recovery = false) {
     $('#member-plan').textContent = String(account.plan || 'free').replace(/^./, (letter) => letter.toUpperCase());
     $('#member-usage').textContent = `${account.monitor_count || 0} / ${account.limit || 0}`;
     $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
+    $('#email-frequency').value = account.email_unsubscribed_at ? 'off' : (account.email_frequency || 'immediate');
+    $('#email-severity').value = account.email_min_severity || 'low';
     if (recovery) {
       $('#password-msg').textContent = 'Choose a new password below to finish recovering your account.';
       $('#new-password').focus();
@@ -242,6 +258,36 @@ $('#password-form').addEventListener('submit', async (event) => {
     setSettingsMessage('#password-msg', 'Password updated successfully.', 'success');
   } catch (error) {
     setSettingsMessage('#password-msg', error.message || 'Unable to update your password.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#email-alert-form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const button = event.currentTarget.querySelector('button[type="submit"]');
+  button.disabled = true;
+  setSettingsMessage('#email-alert-msg', 'Saving email preferences…');
+  try {
+    const frequency = $('#email-frequency').value;
+    await emailRequest('preferences', { frequency, min_severity: $('#email-severity').value, resubscribe: frequency !== 'off' });
+    setSettingsMessage('#email-alert-msg', frequency === 'off' ? 'Email alerts turned off.' : 'Email alert preferences saved.', 'success');
+  } catch (error) {
+    setSettingsMessage('#email-alert-msg', error.message || 'Unable to save email preferences.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
+
+$('#test-email').addEventListener('click', async (event) => {
+  const button = event.currentTarget;
+  button.disabled = true;
+  setSettingsMessage('#email-alert-msg', 'Sending test email…');
+  try {
+    await emailRequest('test');
+    setSettingsMessage('#email-alert-msg', 'Test email sent. Check your inbox.', 'success');
+  } catch (error) {
+    setSettingsMessage('#email-alert-msg', error.message || 'Unable to send the test email.', 'error');
   } finally {
     button.disabled = false;
   }
