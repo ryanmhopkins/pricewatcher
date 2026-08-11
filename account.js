@@ -2,7 +2,7 @@ const SUPABASE_URL = 'https://hmsldwpcaupanooestfr.supabase.co';
 const EDGE_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-api`;
 const EMAIL_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-email`;
 const PUBLISHABLE_KEY = 'sb_publishable_QCWt9V-_up-ePCszAB9S1A_k2-bPOQj';
-const CALLBACK_URL = 'https://pricewatcher-nu.vercel.app/account.html';
+const CALLBACK_URL = 'https://plansentry.com/account.html';
 
 let mode = 'signin';
 let accessToken = localStorage.getItem('pw_access_token') || '';

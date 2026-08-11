@@ -1,4 +1,4 @@
-# PriceWatcher — zero-dependency MVP
+# PlanSentry — competitor pricing intelligence
 
 Single-purpose Micro-SaaS: watch SaaS pricing pages and surface pricing-relevant changes.
 

@@ -7,4 +7,4 @@ Disallow: /admin.html
 Disallow: /changes.html
 Disallow: /api/
 
-Sitemap: https://pricewatcher-nu.vercel.app/sitemap.xml
+Sitemap: https://plansentry.com/sitemap.xml

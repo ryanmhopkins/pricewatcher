@@ -1,6 +1,6 @@
 {
-  "name": "PriceWatcher",
-  "short_name": "PriceWatcher",
+  "name": "PlanSentry",
+  "short_name": "PlanSentry",
   "description": "Monitor SaaS pricing pages and detect meaningful pricing changes.",
   "start_url": "/app",
   "display": "standalone",
