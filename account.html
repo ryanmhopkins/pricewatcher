@@ -8,7 +8,7 @@
   <meta name="description" content="Create or manage your PriceWatcher account and subscription.">
   <link rel="icon" href="/icon.svg">
   <link rel="stylesheet" href="/marketing.css?v=2">
-  <link rel="stylesheet" href="/account.css?v=3">
+  <link rel="stylesheet" href="/account.css?v=4">
 </head>
 <body>
   <div class="wrap">
@@ -61,12 +61,23 @@
             <div><h3>Password</h3><p>Use at least eight characters for your new password.</p></div>
             <form id="password-form" class="settings-form"><label for="new-password">New password</label><input id="new-password" type="password" autocomplete="new-password" minlength="8" required><label for="confirm-password">Confirm new password</label><div class="settings-control"><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required><button class="btn secondary" type="submit">Update password</button></div><div class="settings-msg" id="password-msg" role="status" aria-live="polite"></div></form>
           </section>
+          <section class="settings-section">
+            <div><h3>Email alerts</h3><p>Choose when PlanSentry emails you and the minimum change importance you want to receive.</p></div>
+            <form id="email-alert-form" class="settings-form notification-form">
+              <label for="email-frequency">Delivery schedule</label>
+              <select id="email-frequency"><option value="immediate">Immediately</option><option value="daily">Daily digest</option><option value="weekly">Weekly digest</option><option value="off">Off</option></select>
+              <label for="email-severity">Minimum importance</label>
+              <select id="email-severity"><option value="low">All changes</option><option value="medium">Medium and high</option><option value="high">High only</option></select>
+              <div class="notification-actions"><button class="btn secondary" type="submit">Save alert settings</button><button class="btn secondary" id="test-email" type="button">Send test email</button></div>
+              <div class="settings-msg" id="email-alert-msg" role="status" aria-live="polite"></div>
+            </form>
+          </section>
           <section class="settings-section billing-section"><div><h3>Billing</h3><p>Manage payment methods, invoices, and your subscription securely through Stripe.</p></div><div class="billing-actions"><a class="btn secondary" id="billing-portal" href="https://billing.stripe.com/p/login/eVqbJ10kg4Ub8Bw3H3aEE00">Manage billing</a><a class="btn secondary" href="/pricing.html">View plans</a></div></section>
         </div>
         <div class="account-actions"><a class="btn primary" href="/app">Back to dashboard</a><button class="btn secondary" id="account-signout" type="button">Sign out</button></div>
       </section>
     </main>
   </div>
-  <script src="/account.js?v=5"></script>
+  <script src="/account.js?v=6"></script>
 </body>
 </html>
