@@ -32,6 +32,7 @@ function setMode(nextMode) {
   $('#auth-copy').textContent = signingIn ? 'Sign in to open your monitoring workspace.' : 'Start with three free monitors. No credit card required.';
   $('#submit-label').textContent = signingIn ? 'Sign in' : 'Create account';
   $('#password').autocomplete = signingIn ? 'current-password' : 'new-password';
+  $('#forgot-password').hidden = !signingIn;
   if (!purchased) setMessage('');
 }
 
@@ -69,7 +70,6 @@ async function authRequest(path, body) {
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
-    // Use the status-based fallback below if the service returns non-JSON.
   }
   if (!response.ok) throw new Error(data.msg || data.message || data.error_description || data.error || `Request failed (${response.status})`);
   return data;
@@ -125,7 +125,7 @@ function showAuth() {
   authCard.hidden = false;
 }
 
-async function showMember() {
+async function showMember(recovery = false) {
   try {
     const account = await accountRequest();
     authCard.hidden = true;
@@ -135,6 +135,10 @@ async function showMember() {
     $('#member-plan').textContent = String(account.plan || 'free').replace(/^./, (letter) => letter.toUpperCase());
     $('#member-usage').textContent = `${account.monitor_count || 0} / ${account.limit || 0}`;
     $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
+    if (recovery) {
+      $('#password-msg').textContent = 'Choose a new password below to finish recovering your account.';
+      $('#new-password').focus();
+    }
   } catch {
     clearSession();
     showAuth();
@@ -144,13 +148,34 @@ async function showMember() {
 
 const hash = new URLSearchParams(location.hash.slice(1));
 if (hash.get('access_token')) {
+  const recovery = hash.get('type') === 'recovery';
   storeSession({ access_token: hash.get('access_token'), refresh_token: hash.get('refresh_token'), expires_at: Math.floor(Date.now() / 1000) + Number(hash.get('expires_in') || 3600) });
   history.replaceState(null, '', location.pathname + location.search);
-  showMember();
+  showMember(recovery);
 }
 
 $('#tab-signin').addEventListener('click', () => setMode('signin'));
 $('#tab-signup').addEventListener('click', () => setMode('signup'));
+
+$('#forgot-password').addEventListener('click', async () => {
+  const email = $('#email').value.trim();
+  if (!email) {
+    setMessage('Enter your email address first, then choose “Forgot your password?”.', 'error');
+    $('#email').focus();
+    return;
+  }
+  const button = $('#forgot-password');
+  button.disabled = true;
+  setMessage('Sending password reset email…', 'loading');
+  try {
+    await authRequest(`/auth/v1/recover?redirect_to=${encodeURIComponent(CALLBACK_URL)}`, { email });
+    setMessage('Password reset email sent. Open the link in your inbox to choose a new password.', 'success');
+  } catch (error) {
+    setMessage(error.message || 'Unable to send a password reset email.', 'error');
+  } finally {
+    button.disabled = false;
+  }
+});
 
 $('#auth-form').addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -226,7 +251,6 @@ $('#account-signout').addEventListener('click', async () => {
   try {
     await fetch(`${SUPABASE_URL}/auth/v1/logout`, { method: 'POST', headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}` } });
   } catch {
-    // Clear the local session even if remote sign-out is unavailable.
   }
   clearSession();
   showAuth();
@@ -234,6 +258,7 @@ $('#account-signout').addEventListener('click', async () => {
   setMessage('You have been signed out.', 'success');
 });
 
+setMode(mode);
 if (accessToken) {
   showMember();
 } else if (purchased) {
