@@ -147,7 +147,7 @@ async function showMember(recovery = false) {
     $('#member-email').textContent = account.email || '—';
     $('#settings-email').value = account.email || '';
     $('#member-plan').textContent = String(account.plan || 'free').replace(/^./, (letter) => letter.toUpperCase());
-    $('#member-usage').textContent = `${account.monitor_count || 0} / ${account.limit || 0}`;
+    $('#member-usage').textContent = account.limit === null ? `${account.monitor_count || 0} / Unlimited` : `${account.monitor_count || 0} / ${account.limit || 0}`;
     $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
     $('#email-frequency').value = account.email_unsubscribed_at ? 'off' : (account.email_frequency || 'immediate');
     $('#email-severity').value = account.email_min_severity || 'low';
