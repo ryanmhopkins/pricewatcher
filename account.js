@@ -111,6 +111,57 @@ async function emailRequest(action, payload = {}, retry = true) {
   return data;
 }
 
+function deliveryKindLabel(kind) {
+  return ({ test: 'Test email', immediate: 'Change alert', daily_digest: 'Daily digest', weekly_digest: 'Weekly digest' })[kind] || 'PlanSentry email';
+}
+
+async function loadEmailDeliveries() {
+  const container = $('#email-deliveries');
+  if (!container || !accessToken) return;
+  container.replaceChildren();
+  const loading = document.createElement('p');
+  loading.className = 'delivery-empty';
+  loading.textContent = 'Loading recent delivery activity…';
+  container.appendChild(loading);
+  try {
+    const data = await emailRequest('deliveries');
+    const deliveries = Array.isArray(data.deliveries) ? data.deliveries : [];
+    container.replaceChildren();
+    if (!deliveries.length) {
+      const empty = document.createElement('p');
+      empty.className = 'delivery-empty';
+      empty.textContent = 'No email attempts recorded yet. Use “Send test email” above to verify delivery.';
+      container.appendChild(empty);
+      return;
+    }
+    deliveries.forEach((delivery) => {
+      const row = document.createElement('article');
+      row.className = `delivery-row ${delivery.status || 'pending'}`;
+      const details = document.createElement('div');
+      const title = document.createElement('b');
+      title.textContent = deliveryKindLabel(delivery.kind);
+      const subject = document.createElement('span');
+      subject.textContent = delivery.subject || 'PlanSentry email';
+      details.append(title, subject);
+      const meta = document.createElement('div');
+      const status = document.createElement('strong');
+      status.textContent = delivery.status === 'sent' ? 'Sent' : delivery.status === 'failed' ? 'Failed' : 'Pending';
+      const timestamp = document.createElement('time');
+      const date = delivery.sent_at || delivery.created_at;
+      timestamp.textContent = date ? new Date(date).toLocaleString() : '';
+      meta.append(status, timestamp);
+      row.append(details, meta);
+      container.appendChild(row);
+    });
+  } catch (error) {
+    container.replaceChildren();
+    const failed = document.createElement('p');
+    failed.className = 'delivery-empty error';
+    failed.textContent = error.message || 'Unable to load email delivery activity.';
+    container.appendChild(failed);
+  }
+}
+
 async function updateAuthUser(body, retry = true) {
   let response;
   try {
@@ -151,6 +202,7 @@ async function showMember(recovery = false) {
     $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
     $('#email-frequency').value = account.email_unsubscribed_at ? 'off' : (account.email_frequency || 'immediate');
     $('#email-severity').value = account.email_min_severity || 'low';
+    loadEmailDeliveries();
     if (recovery) {
       $('#password-msg').textContent = 'Choose a new password below to finish recovering your account.';
       $('#new-password').focus();
@@ -286,12 +338,15 @@ $('#test-email').addEventListener('click', async (event) => {
   try {
     await emailRequest('test');
     setSettingsMessage('#email-alert-msg', 'Test email sent. Check your inbox.', 'success');
+    await loadEmailDeliveries();
   } catch (error) {
     setSettingsMessage('#email-alert-msg', error.message || 'Unable to send the test email.', 'error');
   } finally {
     button.disabled = false;
   }
 });
+
+$('#refresh-deliveries').addEventListener('click', loadEmailDeliveries);
 
 $('#account-signout').addEventListener('click', async () => {
   try {
