@@ -1,0 +1,8 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+const U=Deno.env.get('SUPABASE_URL')!,K=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const H={apikey:K,Authorization:`Bearer ${K}`};
+const C={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type','Cache-Control':'no-store, no-cache, must-revalidate, max-age=0','Pragma':'no-cache'};
+const json=(d:unknown,s=200)=>new Response(JSON.stringify(d),{status:s,headers:{'Content-Type':'application/json',...C}});
+async function sel(p:string){const r=await fetch(`${U}/rest/v1/${p}`,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json()}
+async function user(token:string){const r=await fetch(`${U}/auth/v1/user`,{headers:{apikey:K,Authorization:`Bearer ${token}`}});if(!r.ok)return null;return r.json()}
+Deno.serve(async req=>{if(req.method==='OPTIONS')return new Response('ok',{headers:C});try{const b=await req.json().catch(()=>({})),u=await user(String(b.access_token||''));if(!u?.id)return json({error:'Authentication required'},401);const ms=await sel(`monitors?owner_id=eq.${encodeURIComponent(u.id)}&select=id`),out:any={};for(const m of ms){const s=(await sel(`snapshots?monitor_id=eq.${encodeURIComponent(m.id)}&select=pricing_structure,created_at&order=created_at.desc&limit=1`))[0];if(s){const plans=Array.isArray(s?.pricing_structure?.plans)?s.pricing_structure.plans:[];const packaging=Array.isArray(s?.pricing_structure?.packaging)?s.pricing_structure.packaging:[];out[m.id]={plans,packaging,captured_at:s.created_at}}}return json(out)}catch(e){return json({error:e instanceof Error?e.message:String(e)},500)}});
