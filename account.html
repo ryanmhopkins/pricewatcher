@@ -9,13 +9,19 @@
   <link rel="icon" href="/icon.svg">
   <link rel="stylesheet" href="/marketing.css?v=2">
   <link rel="stylesheet" href="/account.css?v=4">
+  <link rel="stylesheet" href="/product-footer.css?v=1">
 </head>
 <body>
   <div class="wrap">
     <header class="site-header">
-      <a class="logo" href="/"><span>↗</span>PlanSentry</a>
+      <a class="logo" href="/">
+<span>↗</span>PlanSentry</a>
       <nav class="nav" aria-label="Primary navigation">
-        <a href="/">Home</a><a href="/features.html">Features</a><a href="/pricing.html">Pricing</a><a href="/faq.html">FAQ</a><a class="cta" href="/app">Open app</a>
+        <a href="/">Home</a>
+<a href="/features.html">Features</a>
+<a href="/pricing.html">Pricing</a>
+<a href="/faq.html">FAQ</a>
+<a class="cta" href="/app">Open app</a>
       </nav>
     </header>
     <main class="account-page">
@@ -24,9 +30,21 @@
         <h1 id="account-heading">Pricing intelligence starts here.</h1>
         <p class="lead">Create a private workspace for your competitor monitors, change history, alerts, and subscription.</p>
         <div class="account-benefits" aria-label="PlanSentry benefits">
-          <div><span>01</span><p><b>Track the right pages.</b> Keep every competitor and pricing URL organized in one workspace.</p></div>
-          <div><span>02</span><p><b>See meaningful changes.</b> Separate pricing signals from routine page edits.</p></div>
-          <div><span>03</span><p><b>Act while it matters.</b> Review history and send alerts to the tools your team already uses.</p></div>
+          <div>
+<span>01</span>
+<p>
+<b>Track the right pages.</b> Keep every competitor and pricing URL organized in one workspace.</p>
+</div>
+          <div>
+<span>02</span>
+<p>
+<b>See meaningful changes.</b> Separate pricing signals from routine page edits.</p>
+</div>
+          <div>
+<span>03</span>
+<p>
+<b>Act while it matters.</b> Review history and send alerts to the tools your team already uses.</p>
+</div>
         </div>
         <p class="account-trust">Secure authentication by Supabase · Billing by Stripe</p>
       </section>
@@ -43,46 +61,128 @@
           <input id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" required>
           <label for="password">Password</label>
           <input id="password" name="password" type="password" autocomplete="current-password" minlength="8" placeholder="At least 8 characters" required>
-          <button class="btn primary auth-submit" id="submit" type="submit"><span id="submit-label">Sign in</span><span aria-hidden="true">→</span></button>
+          <button class="btn primary auth-submit" id="submit" type="submit">
+<span id="submit-label">Sign in</span>
+<span aria-hidden="true">→</span>
+</button>
         </form>
         <button class="auth-link" id="forgot-password" type="button">Forgot your password?</button>
-        <div class="auth-msg" id="auth-msg" role="status" aria-live="polite"></div>
+        <div class="auth-msg" id="auth-msg" role="status" aria-live="polite">
+</div>
         <p class="auth-fineprint">New accounts require email confirmation. If you purchased a plan, use the same email address from Stripe Checkout.</p>
       </section>
       <section class="auth-card member-card" id="member-card" aria-labelledby="member-title" hidden>
-        <div class="eyebrow">Account settings</div><h2 id="member-title">Manage your account</h2><p>Update your sign-in details, plan, and billing preferences.</p>
-        <div class="account-grid"><div class="account-row"><span>Email</span><b id="member-email">—</b></div><div class="account-row"><span>Plan</span><b id="member-plan">—</b></div><div class="account-row"><span>Monitors</span><b id="member-usage">—</b></div><div class="account-row"><span>Subscription</span><b id="member-status">—</b></div></div>
+        <div class="eyebrow">Account settings</div>
+<h2 id="member-title">Manage your account</h2>
+<p>Update your sign-in details, plan, and billing preferences.</p>
+        <div class="account-grid">
+<div class="account-row">
+<span>Email</span>
+<b id="member-email">—</b>
+</div>
+<div class="account-row">
+<span>Plan</span>
+<b id="member-plan">—</b>
+</div>
+<div class="account-row">
+<span>Monitors</span>
+<b id="member-usage">—</b>
+</div>
+<div class="account-row">
+<span>Subscription</span>
+<b id="member-status">—</b>
+</div>
+</div>
         <div class="settings-sections" id="settings">
           <section class="settings-section">
-            <div><h3>Email address</h3><p>Changing your email may require confirmation from your inbox.</p></div>
-            <form id="email-form" class="settings-form"><label for="settings-email">New email address</label><div class="settings-control"><input id="settings-email" type="email" autocomplete="email" required><button class="btn secondary" type="submit">Update email</button></div><div class="settings-msg" id="email-msg" role="status" aria-live="polite"></div></form>
+            <div>
+<h3>Email address</h3>
+<p>Changing your email may require confirmation from your inbox.</p>
+</div>
+            <form id="email-form" class="settings-form">
+<label for="settings-email">New email address</label>
+<div class="settings-control">
+<input id="settings-email" type="email" autocomplete="email" required>
+<button class="btn secondary" type="submit">Update email</button>
+</div>
+<div class="settings-msg" id="email-msg" role="status" aria-live="polite">
+</div>
+</form>
           </section>
           <section class="settings-section">
-            <div><h3>Password</h3><p>Use at least eight characters for your new password.</p></div>
-            <form id="password-form" class="settings-form"><label for="new-password">New password</label><input id="new-password" type="password" autocomplete="new-password" minlength="8" required><label for="confirm-password">Confirm new password</label><div class="settings-control"><input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required><button class="btn secondary" type="submit">Update password</button></div><div class="settings-msg" id="password-msg" role="status" aria-live="polite"></div></form>
+            <div>
+<h3>Password</h3>
+<p>Use at least eight characters for your new password.</p>
+</div>
+            <form id="password-form" class="settings-form">
+<label for="new-password">New password</label>
+<input id="new-password" type="password" autocomplete="new-password" minlength="8" required>
+<label for="confirm-password">Confirm new password</label>
+<div class="settings-control">
+<input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required>
+<button class="btn secondary" type="submit">Update password</button>
+</div>
+<div class="settings-msg" id="password-msg" role="status" aria-live="polite">
+</div>
+</form>
           </section>
           <section class="settings-section">
-            <div><h3>Email alerts</h3><p>Choose when PlanSentry emails you and the minimum change importance you want to receive.</p></div>
+            <div>
+<h3>Email alerts</h3>
+<p>Choose when PlanSentry emails you and the minimum change importance you want to receive.</p>
+</div>
             <form id="email-alert-form" class="settings-form notification-form">
               <label for="email-frequency">Delivery schedule</label>
-              <select id="email-frequency"><option value="immediate">Immediately</option><option value="daily">Daily digest</option><option value="weekly">Weekly digest</option><option value="off">Off</option></select>
+              <select id="email-frequency">
+<option value="immediate">Immediately</option>
+<option value="daily">Daily digest</option>
+<option value="weekly">Weekly digest</option>
+<option value="off">Off</option>
+</select>
               <label for="email-severity">Minimum importance</label>
-              <select id="email-severity"><option value="low">All changes</option><option value="medium">Medium and high</option><option value="high">High only</option></select>
-              <div class="notification-actions"><button class="btn secondary" type="submit">Save alert settings</button><button class="btn secondary" id="test-email" type="button">Send test email</button></div>
-              <div class="settings-msg" id="email-alert-msg" role="status" aria-live="polite"></div>
+              <select id="email-severity">
+<option value="low">All changes</option>
+<option value="medium">Medium and high</option>
+<option value="high">High only</option>
+</select>
+              <div class="notification-actions">
+<button class="btn secondary" type="submit">Save alert settings</button>
+<button class="btn secondary" id="test-email" type="button">Send test email</button>
+</div>
+              <div class="settings-msg" id="email-alert-msg" role="status" aria-live="polite">
+</div>
             </form>
           </section>
           <section class="settings-section">
-            <div><h3>Email delivery activity</h3><p>Recent PlanSentry alerts and tests for this account.</p></div>
-            <div id="email-deliveries" class="delivery-list"><p class="delivery-empty">Loading recent delivery activity…</p></div>
+            <div>
+<h3>Email delivery activity</h3>
+<p>Recent PlanSentry alerts and tests for this account.</p>
+</div>
+            <div id="email-deliveries" class="delivery-list">
+<p class="delivery-empty">Loading recent delivery activity…</p>
+</div>
             <button class="auth-link delivery-refresh" id="refresh-deliveries" type="button">Refresh delivery activity</button>
           </section>
-          <section class="settings-section billing-section"><div><h3>Billing</h3><p>Manage payment methods, invoices, and your subscription securely through Stripe.</p></div><div class="billing-actions"><a class="btn secondary" id="billing-portal" href="https://billing.stripe.com/p/login/eVqbJ10kg4Ub8Bw3H3aEE00">Manage billing</a><a class="btn secondary" href="/pricing.html">View plans</a></div></section>
+          <section class="settings-section billing-section">
+<div>
+<h3>Billing</h3>
+<p>Manage payment methods, invoices, and your subscription securely through Stripe.</p>
+</div>
+<div class="billing-actions">
+<a class="btn secondary" id="billing-portal" href="https://billing.stripe.com/p/login/eVqbJ10kg4Ub8Bw3H3aEE00">Manage billing</a>
+<a class="btn secondary" href="/pricing.html">View plans</a>
+</div>
+</section>
         </div>
-        <div class="account-actions"><a class="btn primary" href="/app">Back to dashboard</a><button class="btn secondary" id="account-signout" type="button">Sign out</button></div>
+        <div class="account-actions">
+<a class="btn primary" href="/app">Back to dashboard</a>
+<button class="btn secondary" id="account-signout" type="button">Sign out</button>
+</div>
       </section>
     </main>
   </div>
-  <script src="/account.js?v=7"></script>
+  <footer class="product-footer"><span>© 2026 PlanSentry</span><a href="/status.html">Status</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></footer>
+  <script src="/account.js?v=7">
+</script>
 </body>
 </html>

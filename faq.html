@@ -1,1 +1,111 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090a0c"><title>FAQ — PlanSentry</title><meta name="description" content="Frequently asked questions about PlanSentry competitor pricing monitoring."><link rel="icon" href="/icon.svg"><link rel="stylesheet" href="/marketing.css?v=4"></head><body><div class="wrap"><header class="site-header"><a class="logo" href="/"><span>↗</span>PlanSentry</a><nav class="nav"><a href="/">Home</a><a href="/features.html">Features</a><a href="/pricing.html">Pricing</a><a class="active" href="/faq.html">FAQ</a><a class="cta" href="/app">Open app</a></nav></header><main><section class="page-hero"><div class="eyebrow">FAQ</div><h1>Questions about <em>PlanSentry.</em></h1><p class="lead">The short version: add a competitor pricing URL, choose how often it should be checked, and PlanSentry records meaningful pricing-related changes.</p></section><section class="faq"><details open><summary>What exactly does PlanSentry monitor?</summary><p>A specific public URL that contains a competitor's pricing, plans, packaging, or related commercial information. Each URL is one monitor.</p></details><details><summary>How is this different from a generic website-change monitor?</summary><p>PlanSentry is intentionally focused on pricing. It filters for plan names, currencies, billing periods, usage limits, seats, credits, and other pricing-related language before comparing snapshots, which reduces unrelated page noise.</p></details><details><summary>How often can pages be checked?</summary><p>The current app supports hourly, every 6 hours, every 12 hours, daily, and weekly monitoring. Free accounts use daily or weekly checks; Pro unlocks faster schedules.</p></details><details><summary>What happens when a change is detected?</summary><p>PlanSentry records added and removed pricing-related lines, stores the event in history, and attempts to classify the change. When possible it produces a concise summary such as “$29 → $39.”</p></details><details><summary>Can PlanSentry notify other tools?</summary><p>Yes. Pro monitors can send a webhook when pricing changes. That can connect to Slack, Discord, Zapier, Make, n8n, or your own HTTPS endpoint.</p></details><details><summary>Does it support email alerts?</summary><p>Yes. PlanSentry can send immediate, daily, or weekly email alerts, with a configurable minimum severity. Pro monitors can also send webhooks to Slack, Discord, Zapier, Make, n8n, or your own HTTPS endpoint.</p></details><details><summary>Will it work on every pricing page?</summary><p>No crawler can guarantee every site. PlanSentry starts with a normal HTTP fetch and can fall back to browser rendering for heavily JavaScript-rendered or protected pages. Some sites may still block automated access or change in ways that require adaptation.</p></details><details><summary>Does PlanSentry use AI to invent or guess pricing changes?</summary><p>No. The core detection is deterministic and based on stored page snapshots. Change summaries are derived from the actual added and removed pricing text; the raw evidence remains visible.</p></details><details><summary>Can I pause a monitor?</summary><p>Yes. Pausing stops scheduled checks while preserving the monitor's snapshots and change history.</p></details><details><summary>Can I export my data?</summary><p>Yes. The dashboard can export monitoring and change data as JSON.</p></details><details><summary>How much does PlanSentry cost?</summary><p>There are two plans: Free at $0 and Pro at $19/month. Pro is also available for $99/year, which works out to $8.25/month effective.</p></details><details><summary>Is billing live?</summary><p>Yes. Pro subscriptions use Stripe-hosted Checkout. Customers can manage payment methods, invoices, and cancellation through the Stripe customer portal.</p></details><details><summary>Is PlanSentry publicly available?</summary><p>Yes. Anyone can create an account and start with the Free plan. The monitoring dashboard requires a verified PlanSentry account.</p></details></section></main><footer class="footer"><span>© 2026 PlanSentry</span><a href="/features.html">Features</a><a href="/pricing.html">Pricing</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></footer></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090a0c">
+<title>FAQ — PlanSentry</title>
+<meta name="description" content="Answers about PlanSentry competitor pricing and packaging monitoring, alerts, billing, security, and supported pages.">
+<link rel="canonical" href="https://plansentry.com/faq.html">
+<link rel="icon" href="/icon.svg">
+<link rel="stylesheet" href="/marketing.css?v=6">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="wrap">
+<header class="site-header">
+<a class="logo" href="/">
+<span>↗</span>PlanSentry</a>
+<nav class="nav" aria-label="Primary navigation">
+<a href="/">Home</a>
+<a href="/features.html">Features</a>
+<a href="/pricing.html">Pricing</a>
+<a class="active" href="/faq.html">FAQ</a>
+<a class="cta" href="/app">Open app</a>
+</nav>
+</header>
+<main id="main">
+<section class="page-hero">
+<div class="eyebrow">Questions, answered</div>
+<h1>How PlanSentry <em>tracks the market.</em>
+</h1>
+<p class="lead">Everything you need to know about monitoring competitor prices, plans, packages, and promotions.</p>
+</section>
+<section class="faq">
+<details open>
+<summary>What does PlanSentry monitor?</summary>
+<p>PlanSentry monitors a public URL containing pricing, plans, packages, limits, or related commercial information. One URL is one monitor. It prioritizes pricing-relevant content rather than treating every visual edit as an important change.</p>
+</details>
+<details>
+<summary>What can it detect?</summary>
+<p>Depending on what a page exposes clearly, PlanSentry can structure plan names, numeric prices, currencies, billing periods, seats, storage, credits, usage limits, included features, support language, annual offers, advertised savings, and months-free promotions.</p>
+</details>
+<details>
+<summary>How is this different from a generic page-change tool?</summary>
+<p>Generic monitors report that a page changed. PlanSentry is designed to explain the commercial move: which price, plan, package signal, or annual offer was added, removed, or changed—while keeping the raw evidence available.</p>
+</details>
+<details>
+<summary>How often are pages checked?</summary>
+<p>Free monitors run daily or weekly. Plus and Pro unlock hourly, every 6 hours, every 12 hours, daily, and weekly schedules. Manual checks are also available, subject to reasonable rate limits.</p>
+</details>
+<details>
+<summary>Will it work on every pricing page?</summary>
+<p>No monitoring system can guarantee every website. PlanSentry uses a normal fetch first and can use browser rendering for JavaScript-heavy pages. Anti-bot systems, login walls, regional content, unusual markup, or private pages can still prevent reliable capture. Monitor health makes those failures visible.</p>
+</details>
+<details>
+<summary>Does PlanSentry use AI to guess prices?</summary>
+<p>No. Detection is grounded in stored page snapshots and deterministic parsing. PlanSentry does not invent prices or silently replace the underlying evidence. When a page cannot be structured confidently, the raw captured change remains available.</p>
+</details>
+<details>
+<summary>What happens when a change is detected?</summary>
+<p>The event is stored in history, classified by type and severity, and shown with its supporting added and removed content. Eligible alerts can be delivered immediately, as a daily or weekly digest, or through a configured webhook.</p>
+</details>
+<details>
+<summary>What are smart thresholds?</summary>
+<p>Thresholds let you focus notifications on selected conditions, such as a minimum percentage increase, a price above or below a target, removal of a free tier, or addition of an enterprise plan.</p>
+</details>
+<details>
+<summary>Can I compare competitors?</summary>
+<p>Yes. Use groups and tags to organize the portfolio, open competitor profiles for focused history, and use the pricing matrix for a consolidated view across monitored pages.</p>
+</details>
+<details>
+<summary>Are screenshots public?</summary>
+<p>No. Captured pricing-page screenshots are stored privately and delivered through short-lived signed links to the authenticated owner of the monitor.</p>
+</details>
+<details>
+<summary>Can I pause, remove, or export my data?</summary>
+<p>Yes. Pausing keeps existing history while stopping scheduled checks. Removing a monitor deletes its application history. You can export your workspace and change data as JSON.</p>
+</details>
+<details>
+<summary>What plans are available?</summary>
+<p>Free includes three monitors with daily or weekly checks. Plus is $9 monthly or $49 annually for up to 25 monitors and faster schedules. Pro is $19 monthly or $99 annually for unlimited competitor monitoring.</p>
+</details>
+<details>
+<summary>How is billing managed?</summary>
+<p>Subscriptions use Stripe-hosted Checkout. Signed-in customers can manage payment methods, invoices, and cancellation through Stripe’s customer portal. PlanSentry does not receive or store complete card numbers.</p>
+</details>
+<details>
+<summary>Is PlanSentry publicly available?</summary>
+<p>Yes. Anyone can create an account, confirm their email, and start on Free. The monitoring workspace and customer data require authentication.</p>
+</details>
+</section>
+<section class="section final-cta">
+<div>
+<div class="eyebrow">Still deciding?</div>
+<h2>Start with the competitors you check most.</h2>
+</div>
+<a class="btn" href="/account.html">Create a free account →</a>
+</section>
+</main>
+<footer class="footer">
+<span>© 2026 PlanSentry</span>
+<a href="/features.html">Features</a>
+<a href="/pricing.html">Pricing</a>
+<a href="/status.html">Status</a>
+<a href="/contact.html">Contact</a>
+<a href="/privacy.html">Privacy</a>
+<a href="/terms.html">Terms</a>
+</footer>
+</div>
+</body>
+</html>

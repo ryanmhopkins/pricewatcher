@@ -1,7 +1,7 @@
 {
   "name": "PlanSentry",
   "short_name": "PlanSentry",
-  "description": "Monitor SaaS pricing pages and detect meaningful pricing changes.",
+  "description": "Track competitor prices, plans, packages, discounts, and positioning changes.",
   "start_url": "/app",
   "display": "standalone",
   "background_color": "#090a0c",

@@ -1,0 +1,5 @@
+.product-footer { max-width: 1440px; margin: 56px auto 0; padding: 24px 32px 36px; border-top: 1px solid #292c33; display: flex; flex-wrap: wrap; gap: 18px; color: #858a94; font-size: 12px; }
+.product-footer span { margin-right: auto; }
+.product-footer a { color: #a6aab3; text-decoration: none; }
+.product-footer a:hover { color: #fff; }
+@media (max-width: 520px) { .product-footer { padding-inline: 18px; } .product-footer span { width: 100%; } }

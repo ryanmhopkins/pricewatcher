@@ -59,7 +59,7 @@ Deno.serve(async (request) => {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, to: [TO], reply_to: TO, subject, html }),
+      body: JSON.stringify({ from: FROM, to: [TO], reply_to: email, subject, html }),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || `Email provider returned ${response.status}`);

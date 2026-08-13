@@ -1,26 +1,27 @@
-# PlanSentry — competitor pricing intelligence
+# PlanSentry — competitor pricing and packaging intelligence
 
-Single-purpose Micro-SaaS: watch SaaS pricing pages and surface pricing-relevant changes.
+PlanSentry monitors public SaaS pricing pages and turns changes to prices, plans, packages, limits, features, and annual offers into structured competitive intelligence.
 
 ## Current architecture
 - Public marketing site and authenticated static dashboard hosted by Vercel.
 - Supabase Postgres stores monitors, snapshots, and detected changes.
-- `pricewatcher-api` Supabase Edge Function performs privileged database operations and pricing-page checks.
+- Supabase Edge Functions perform authenticated account operations, hardened page checks, scheduled monitoring, status reporting, email delivery, contact delivery, and signed screenshot access.
 - Database tables have RLS enabled with no public policies; direct anon/browser table access is blocked.
-- `pricewatcher-cron` Supabase Edge Function performs scheduled batch checks and rate-limits repeated invocations.
-- Supabase `pg_cron` runs the daily check at 13:00 UTC.
+- Supabase `pg_cron` runs the authenticated scheduler hourly; each monitor is checked when its configured cadence is due.
 - Supabase Auth provides account access; Stripe Checkout and the customer portal provide subscription billing.
 
-## MVP behavior
+## Product behavior
 - Add competitor + pricing URL.
 - First snapshot is captured immediately.
-- Daily scheduled check rechecks every monitor.
+- Scheduled and manual checks use SSRF protections, redirect validation, retry handling, challenge detection, and an optional browser-rendering fallback.
 - Pricing-relevant text is normalized and hashed.
-- Changed content creates a line-level added/removed diff.
-- Manual “Check now” is available from the dashboard.
+- Changed content creates structured price, plan, package, and annual-discount details plus line-level evidence.
+- The dashboard includes competitor profiles, groups, tags, notes, a pricing matrix, visual history, thresholds, email alerts, webhooks, review state, health details, bulk actions, and JSON export.
 
-## Current limitations
-Email notifications, teams, browser rendering, queues, and advanced anti-noise rules are not yet included.
+## Plans
+- Free: 3 monitors with daily or weekly schedules.
+- Plus: up to 25 monitors with hourly through weekly schedules.
+- Pro: unlimited monitors with hourly through weekly schedules.
 
 ## Operations
-The public site is served at `/`, while the authenticated dashboard is served at `/app`. Some JavaScript-heavy pricing pages may eventually need a browser-rendering scraper. Add email notifications once a transactional email provider and domain are configured.
+The public site is served at `/`, while the authenticated dashboard is served at `/app`. Operational health is available at `/status.html`. Production email is delivered from the verified `plansentry.com` domain, and subscriptions are managed through Stripe Checkout and the customer portal.

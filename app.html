@@ -15,7 +15,8 @@
   <link rel="stylesheet" href="/monitor-organization.css?v=1">
   <link rel="stylesheet" href="/threshold-alerts.css?v=1">
   <link rel="stylesheet" href="/package-monitoring.css?v=1">
-  <link rel="stylesheet" href="/annual-discounts.css?v=1">
+<link rel="stylesheet" href="/annual-discounts.css?v=1">
+<link rel="stylesheet" href="/product-footer.css?v=1">
 </head>
 <body>
   <div id="gate" class="gate" hidden>
@@ -25,21 +26,33 @@
       <h1>Sign in to PlanSentry</h1>
       <div class="gate-copy">Access your monitors, pricing history, alerts, and subscription.</div>
       <a class="account-entry" href="/account.html">Sign in or create account →</a>
-      <div class="gate-links"><a href="/">Home</a><a href="/pricing.html">Pricing</a><a href="/faq.html">FAQ</a></div>
+      <div class="gate-links">
+<a href="/">Home</a>
+<a href="/pricing.html">Pricing</a>
+<a href="/faq.html">FAQ</a>
+</div>
     </div>
   </div>
 
   <main id="app" hidden>
     <header>
-      <div class="brand"><span>↗</span> PlanSentry</div>
+      <div class="brand">
+<span>↗</span> PlanSentry</div>
       <div class="header-actions">
         <a class="ghost site-link" href="/">Home</a>
         <button class="ghost" id="export">Export</button>
         <div class="account-menu">
-          <button class="ghost account-menu-trigger" type="button" aria-haspopup="true">Account <span aria-hidden="true">⌄</span></button>
+          <button class="ghost account-menu-trigger" type="button" aria-haspopup="true">Account <span aria-hidden="true">⌄</span>
+</button>
           <div class="account-dropdown" role="menu">
-            <div class="account-plan-row"><span>Current plan</span><span class="plan-badge" id="plan-badge" hidden></span></div>
-            <a id="account-link" href="/account.html#settings" role="menuitem"><span>Settings</span></a>
+            <div class="account-plan-row">
+<span>Current plan</span>
+<span class="plan-badge" id="plan-badge" hidden>
+</span>
+</div>
+            <a id="account-link" href="/account.html#settings" role="menuitem">
+<span>Settings</span>
+</a>
             <button id="logout" type="button" role="menuitem">Sign out</button>
           </div>
         </div>
@@ -47,41 +60,87 @@
     </header>
     <section class="hero">
       <p>COMPETITIVE PRICING INTELLIGENCE</p>
-      <h1>Know when your competitors <em>change their pricing.</em></h1>
-      <div>Add a SaaS pricing page. PlanSentry captures a baseline, checks it automatically at your chosen cadence, and surfaces meaningful pricing changes.</div>
+      <h1>Track every price, plan, and <em>package move.</em>
+</h1>
+      <div>Add a competitor pricing page. PlanSentry builds a structured baseline, monitors it on your schedule, and turns every meaningful change into reviewable market intelligence.</div>
     </section>
     <section id="stats" class="stats">
-      <div><b id="stat-active">0</b><span>Active monitors</span></div>
-      <div><b id="stat-changes">0</b><span>Changes detected</span></div>
-      <div><b id="stat-errors">0</b><span>Needs attention</span></div>
+      <div>
+<b id="stat-active">0</b>
+<span>Active monitors</span>
+</div>
+      <div>
+<b id="stat-changes">0</b>
+<span>Changes detected</span>
+</div>
+      <div>
+<b id="stat-errors">0</b>
+<span>Needs attention</span>
+</div>
     </section>
     <section class="grid">
       <div class="card composer">
         <h2>Add a competitor</h2>
         <small id="plan-copy">First snapshot is captured immediately.</small>
         <form id="form">
-          <label>Name<input id="name" placeholder="Acme" maxlength="120" autocomplete="organization" required><span class="field-help">Use the competitor’s recognizable company or product name.</span></label>
-          <label>Pricing URL<input id="url" type="url" placeholder="https://acme.com/pricing" inputmode="url" autocomplete="url" aria-describedby="url-help" required><span class="field-help" id="url-help">Use the public page that shows plans or prices. Avoid homepages, login screens, and private URLs.</span></label>
-          <label>Check frequency<select id="interval"><option value="60">Every hour</option><option value="360">Every 6 hours</option><option value="720">Every 12 hours</option><option value="1440" selected>Daily</option><option value="10080">Weekly</option></select></label>
+          <label>Name<input id="name" placeholder="Acme" maxlength="120" autocomplete="organization" required>
+<span class="field-help">Use the competitor’s recognizable company or product name.</span>
+</label>
+          <label>Pricing URL<input id="url" type="url" placeholder="https://acme.com/pricing" inputmode="url" autocomplete="url" aria-describedby="url-help" required>
+<span class="field-help" id="url-help">Use the public page that shows plans or prices. Avoid homepages, login screens, and private URLs.</span>
+</label>
+          <label>Check frequency<select id="interval">
+<option value="60">Every hour</option>
+<option value="360">Every 6 hours</option>
+<option value="720">Every 12 hours</option>
+<option value="1440" selected>Daily</option>
+<option value="10080">Weekly</option>
+</select>
+</label>
           <button>Start monitoring →</button>
         </form>
-        <div id="monitor-progress" class="monitor-progress" hidden aria-live="polite"><div class="progress-track"><span></span></div><div class="progress-copy"><b id="progress-title">Validating pricing page…</b><span id="progress-detail">Checking that the URL is safe and reachable.</span></div></div>
-        <div id="msg" role="status" aria-live="polite"></div>
+        <div id="monitor-progress" class="monitor-progress" hidden aria-live="polite">
+<div class="progress-track">
+<span>
+</span>
+</div>
+<div class="progress-copy">
+<b id="progress-title">Validating pricing page…</b>
+<span id="progress-detail">Checking that the URL is safe and reachable.</span>
+</div>
+</div>
+        <div id="msg" role="status" aria-live="polite">
+</div>
       </div>
       <div class="card monitors-card">
         <div class="row toolbar">
-          <div><h2>Monitored pages</h2><small id="count">0 competitors</small></div>
-          <div class="toolbar-actions"><input id="search" type="search" placeholder="Search"><button class="ghost" id="check-all">Check all</button><button class="ghost" id="refresh">Refresh</button></div>
+          <div>
+<h2>Monitored pages</h2>
+<small id="count">0 competitors</small>
+</div>
+          <div class="toolbar-actions">
+<input id="search" type="search" placeholder="Search">
+<button class="ghost" id="check-all">Check all</button>
+<button class="ghost" id="refresh">Refresh</button>
+</div>
         </div>
-        <div id="list" class="list"></div>
+        <div id="list" class="list">
+</div>
       </div>
     </section>
   </main>
-  <script src="/app.js?v=17"></script>
-  <script src="/dashboard-enhancements.js?v=11"></script>
-  <script src="/price-history.js?v=1"></script>
-  <script src="/matrix-link.js?v=1"></script>
-  <script src="/dashboard-create.js?v=2"></script>
-  <script src="/pwa.js?v=1"></script>
+  <footer class="product-footer"><span>© 2026 PlanSentry</span><a href="/status.html">Status</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></footer>
+  <script src="/app.js?v=18">
+</script>
+  <script src="/dashboard-enhancements.js?v=11">
+</script>
+  <script src="/price-history.js?v=1">
+</script>
+  <script src="/matrix-link.js?v=1">
+</script>
+  <script src="/dashboard-create.js?v=2">
+</script>
+  <script src="/pwa.js?v=1">
+</script>
 </body>
 </html>
