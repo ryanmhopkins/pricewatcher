@@ -3,8 +3,8 @@ const CHECKOUT_URLS={
   pro:{monthly:'https://buy.stripe.com/7sY00jeb61HZ6toelHaEE01',annual:'https://buy.stripe.com/3cIcN51ok86n4lg1yVaEE04'},
 };
 const PLAN_PRICING={
-  plus:{monthly:{price:'$9',suffix:'/mo',detail:'Billed monthly. Cancel anytime.'},annual:{price:'$49',suffix:'/yr',detail:'<strong>$4.08/mo effective</strong> · billed $49 annually · <s>$108</s>'}},
-  pro:{monthly:{price:'$19',suffix:'/mo',detail:'Billed monthly. Cancel anytime.'},annual:{price:'$99',suffix:'/yr',detail:'<strong>$8.25/mo effective</strong> · billed $99 annually · <s>$228</s>'}},
+  plus:{monthly:{price:'$9',suffix:'/mo',detail:'Billed monthly. Cancel anytime.'},annual:{price:'$49',suffix:'/yr',detail:'<strong>$4.08/mo effective</strong> · save $59 versus monthly'}},
+  pro:{monthly:{price:'$19',suffix:'/mo',detail:'Billed monthly. Cancel anytime.'},annual:{price:'$99',suffix:'/yr',detail:'<strong>$8.25/mo effective</strong> · save $129 versus monthly'}},
 };
 const monthlyBtn=document.querySelector('[data-billing="monthly"]');
 const annualBtn=document.querySelector('[data-billing="annual"]');
