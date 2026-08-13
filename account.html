@@ -72,12 +72,17 @@
               <div class="settings-msg" id="email-alert-msg" role="status" aria-live="polite"></div>
             </form>
           </section>
+          <section class="settings-section">
+            <div><h3>Email delivery activity</h3><p>Recent PlanSentry alerts and tests for this account.</p></div>
+            <div id="email-deliveries" class="delivery-list"><p class="delivery-empty">Loading recent delivery activity…</p></div>
+            <button class="auth-link delivery-refresh" id="refresh-deliveries" type="button">Refresh delivery activity</button>
+          </section>
           <section class="settings-section billing-section"><div><h3>Billing</h3><p>Manage payment methods, invoices, and your subscription securely through Stripe.</p></div><div class="billing-actions"><a class="btn secondary" id="billing-portal" href="https://billing.stripe.com/p/login/eVqbJ10kg4Ub8Bw3H3aEE00">Manage billing</a><a class="btn secondary" href="/pricing.html">View plans</a></div></section>
         </div>
         <div class="account-actions"><a class="btn primary" href="/app">Back to dashboard</a><button class="btn secondary" id="account-signout" type="button">Sign out</button></div>
       </section>
     </main>
   </div>
-  <script src="/account.js?v=6"></script>
+  <script src="/account.js?v=7"></script>
 </body>
 </html>
