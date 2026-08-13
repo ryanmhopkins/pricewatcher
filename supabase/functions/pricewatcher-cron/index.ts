@@ -1,0 +1,1 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";Deno.serve(()=>new Response(JSON.stringify({error:"Endpoint retired. Scheduled monitoring uses the authenticated scheduler."}),{status:410,headers:{"Content-Type":"application/json","Cache-Control":"no-store"}}));

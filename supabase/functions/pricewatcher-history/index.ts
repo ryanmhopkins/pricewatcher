@@ -1,0 +1,10 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "jsr:@supabase/supabase-js@2";
+const U=Deno.env.get('SUPABASE_URL')!,K=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const H={apikey:K,Authorization:`Bearer ${K}`};
+const S=createClient(U,K,{auth:{persistSession:false,autoRefreshToken:false}});
+const C={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type'};
+const json=(d:unknown,s=200)=>new Response(JSON.stringify(d),{status:s,headers:{'Content-Type':'application/json',...C}});
+async function sel(p:string){const r=await fetch(`${U}/rest/v1/${p}`,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json()}
+async function user(token:string){const r=await fetch(`${U}/auth/v1/user`,{headers:{apikey:K,Authorization:`Bearer ${token}`}});if(!r.ok)return null;return r.json()}
+Deno.serve(async req=>{if(req.method==='OPTIONS')return new Response('ok',{headers:C});try{const b=await req.json().catch(()=>({})),u=await user(String(b.access_token||''));if(!u?.id)return json({error:'Authentication required'},401);const id=String(b.id||'');if(!id)return json({error:'Missing monitor id'},400);const m=(await sel(`monitors?id=eq.${encodeURIComponent(id)}&owner_id=eq.${encodeURIComponent(u.id)}&select=id,name,url&limit=1`))[0];if(!m)return json({error:'Monitor not found'},404);const snapshots=await sel(`snapshots?monitor_id=eq.${encodeURIComponent(id)}&select=id,page_title,created_at,pricing_structure,screenshot_path&order=created_at.asc&limit=500`);const signed=await Promise.all(snapshots.map(async(s:any)=>{if(!s.screenshot_path)return{...s,screenshot_url:null};const{data,error}=await S.storage.from('monitor-screenshots').createSignedUrl(s.screenshot_path,900);return{...s,screenshot_url:error?null:data?.signedUrl||null}}));const changes=await sel(`changes?monitor_id=eq.${encodeURIComponent(id)}&select=*&order=created_at.desc&limit=100`);return json({monitor:m,snapshots:signed,changes})}catch(e){return json({error:e instanceof Error?e.message:String(e)},500)}});
