@@ -3,7 +3,7 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY') || '';
-const FROM = 'PlanSentry Contact <hello@updates.plansentry.com>';
+const FROM = 'PlanSentry Contact <hello@plansentry.com>';
 const TO = 'hello@plansentry.com';
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -59,7 +59,7 @@ Deno.serve(async (request) => {
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, to: [TO], reply_to: email, subject, html }),
+      body: JSON.stringify({ from: FROM, to: [TO], reply_to: TO, subject, html }),
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.message || `Email provider returned ${response.status}`);
