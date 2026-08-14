@@ -366,6 +366,7 @@ $('#billing-portal').addEventListener('click', async () => {
   const originalText = button.textContent;
   button.disabled = true;
   button.textContent = 'Opening billing…';
+  setSettingsMessage('#billing-msg', 'Opening your billing portal…');
   try {
     const response = await fetch(BILLING_PORTAL_URL, {
       method: 'POST',
@@ -374,11 +375,12 @@ $('#billing-portal').addEventListener('click', async () => {
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok || !data.url) throw new Error(data.error || 'Unable to open billing portal.');
+    setSettingsMessage('#billing-msg', 'Opening billing portal…', 'success');
     window.location.href = data.url;
   } catch (error) {
     button.disabled = false;
     button.textContent = originalText;
-    setMessage(error.message || 'Unable to open billing portal.', 'error');
+    setSettingsMessage('#billing-msg', error.message || 'Unable to open billing portal.', 'error');
   }
 });
 
