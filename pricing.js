@@ -8,6 +8,22 @@ const PLAN_PRICING={
 };
 const monthlyBtn=document.querySelector('[data-billing="monthly"]');
 const annualBtn=document.querySelector('[data-billing="annual"]');
+
+// If the person is signed in on this browser, thread their Supabase user id
+// through Stripe Checkout as client_reference_id. The webhook then matches
+// the resulting subscription back to this exact account (see
+// pricewatcher-stripe-webhook), instead of relying solely on a
+// case-insensitive email match, which silently fails whenever the checkout
+// email differs from the account email or no account exists yet.
+function checkoutUrlFor(plan,mode){
+  const base=CHECKOUT_URLS[plan][mode];
+  const userId=localStorage.getItem('pw_user_id');
+  if(!userId)return base;
+  const url=new URL(base);
+  url.searchParams.set('client_reference_id',userId);
+  return url.toString();
+}
+
 function setBilling(mode){
   const annual=mode==='annual';
   monthlyBtn?.classList.toggle('active',!annual);
@@ -23,7 +39,7 @@ function setBilling(mode){
     if(price)price.textContent=selected.price;
     if(suffix)suffix.textContent=selected.suffix;
     if(detail)detail.innerHTML=selected.detail;
-    if(cta){cta.href=CHECKOUT_URLS[plan][mode];cta.textContent=`Choose ${annual?'annual':'monthly'} ${plan[0].toUpperCase()+plan.slice(1)} →`;}
+    if(cta){cta.href=checkoutUrlFor(plan,mode);cta.textContent=`Choose ${annual?'annual':'monthly'} ${plan[0].toUpperCase()+plan.slice(1)} →`;}
   }
 }
 monthlyBtn?.addEventListener('click',()=>setBilling('monthly'));

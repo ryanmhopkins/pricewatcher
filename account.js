@@ -3,6 +3,7 @@ const EDGE_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-api`;
 const EMAIL_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-email`;
 const PUBLISHABLE_KEY = 'sb_publishable_QCWt9V-_up-ePCszAB9S1A_k2-bPOQj';
 const CALLBACK_URL = 'https://plansentry.com/account.html';
+const BILLING_PORTAL_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-billing-portal`;
 
 let mode = 'signin';
 let accessToken = localStorage.getItem('pw_access_token') || '';
@@ -37,10 +38,22 @@ function setMode(nextMode) {
   if (!purchased) setMessage('');
 }
 
+function decodeJwtUserId(token) {
+  try {
+    const payload = token.split('.')[1];
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(json).sub || null;
+  } catch {
+    return null;
+  }
+}
+
 function storeSession(data) {
   if (data?.access_token) {
     accessToken = data.access_token;
     localStorage.setItem('pw_access_token', data.access_token);
+    const userId = decodeJwtUserId(data.access_token);
+    if (userId) localStorage.setItem('pw_user_id', userId);
   }
   if (data?.refresh_token) {
     refreshToken = data.refresh_token;
@@ -50,7 +63,7 @@ function storeSession(data) {
 }
 
 function clearSession() {
-  ['pw_access_token', 'pw_refresh_token', 'pw_access_expires_at'].forEach((key) => localStorage.removeItem(key));
+  ['pw_access_token', 'pw_refresh_token', 'pw_access_expires_at', 'pw_user_id'].forEach((key) => localStorage.removeItem(key));
   accessToken = '';
   refreshToken = '';
 }
@@ -347,6 +360,27 @@ $('#test-email').addEventListener('click', async (event) => {
 });
 
 $('#refresh-deliveries').addEventListener('click', loadEmailDeliveries);
+
+$('#billing-portal').addEventListener('click', async () => {
+  const button = $('#billing-portal');
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Opening billing…';
+  try {
+    const response = await fetch(BILLING_PORTAL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+      body: JSON.stringify({ access_token: accessToken }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.url) throw new Error(data.error || 'Unable to open billing portal.');
+    window.location.href = data.url;
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = originalText;
+    setMessage(error.message || 'Unable to open billing portal.', 'error');
+  }
+});
 
 $('#account-signout').addEventListener('click', async () => {
   try {
