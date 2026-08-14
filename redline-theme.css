@@ -31,11 +31,14 @@ h1,h2,h3,.hero h1,.page-hero h1,.section h2,.card h2,.panel h3{font-family:var(-
 .gate-card{background:var(--ink-2)!important;border:1px solid var(--line)!important;border-radius:8px!important}
 
 /* buttons: amber primary, hairline secondary, small radius everywhere */
-button:not(.icon):not(.ghost):not(.quiet):not(.delete):not(.tiny):not([class*="link"]),
-.btn,.account-entry,.nav .cta{
+button:not(.icon):not(.ghost):not(.quiet):not(.delete):not(.tiny):not(.secondary):not([class*="link"]),
+.btn:not(.secondary),.account-entry,.nav .cta{
   background:var(--amber)!important;color:#211605!important;border-radius:4px!important;font-weight:600!important;border:0!important;
 }
 button[class*="link"]{background:transparent!important;color:var(--muted)!important;text-decoration:underline!important;border:0!important;padding:0!important}
+.auth-tabs{background:var(--ink)!important;border:1px solid var(--line)!important;border-radius:6px!important}
+#auth-card .auth-tabs button[role="tab"]{background:transparent!important;color:var(--muted)!important;border-radius:4px!important}
+#auth-card .auth-tabs button[role="tab"].active{background:var(--ink-2)!important;color:var(--text)!important;box-shadow:none!important}
 .btn.secondary,.ghost,.quiet,button.secondary{
   background:transparent!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:4px!important;
 }

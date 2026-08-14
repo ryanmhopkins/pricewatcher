@@ -1,13 +1,5 @@
-.account-page{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(380px,.75fr);gap:72px;align-items:center;min-height:calc(100vh - 77px);padding:70px 0}
-.account-intro h1{max-width:650px;font-size:58px;line-height:1.04;letter-spacing:-.055em;margin:14px 0 20px}
-.account-intro .lead{max-width:620px}
-.account-benefits{display:grid;gap:0;margin-top:38px;max-width:620px;border-top:1px solid #25272d}
-.account-benefits>div{display:grid;grid-template-columns:32px 1fr;gap:14px;padding:17px 0;border-bottom:1px solid #25272d}
-.account-benefits span{color:#686d78;font-size:10px;font-weight:850;letter-spacing:.1em;padding-top:3px}
-.account-benefits p{margin:0;color:#8f939d;font-size:13px;line-height:1.55}
-.account-benefits b{color:#d9dbe0}
-.account-trust{margin-top:24px;color:#686d78;font-size:10px;letter-spacing:.04em}
-.auth-card{width:100%;background:linear-gradient(145deg,rgba(20,21,27,.98),rgba(13,14,18,.98));border:1px solid #30333b;border-radius:22px;padding:30px;box-shadow:0 28px 80px rgba(0,0,0,.32)}
+.account-page{display:flex;justify-content:center;min-height:calc(100vh - 77px);padding:70px 24px}
+.auth-card{width:100%;max-width:440px;background:linear-gradient(145deg,rgba(20,21,27,.98),rgba(13,14,18,.98));border:1px solid #30333b;border-radius:22px;padding:30px;box-shadow:0 28px 80px rgba(0,0,0,.32)}
 .auth-card h2{font-size:31px;letter-spacing:-.035em;margin:10px 0 7px}
 .auth-card>p{color:#91959f;font-size:13px;line-height:1.55;margin:0}
 .auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:24px 0 22px;padding:4px;background:#0b0c0f;border:1px solid #262931;border-radius:12px}
@@ -26,25 +18,34 @@
 .auth-msg.success{color:#9ee6b4}
 .auth-msg.loading{color:#c6c9d0}
 .auth-card .auth-fineprint{margin-top:17px;padding-top:17px;border-top:1px solid #252831;color:#686d78;font-size:10px}
-.member-card{grid-column:2}
-.account-grid{display:grid;gap:8px;margin:24px 0}
-.account-row{display:flex;justify-content:space-between;align-items:center;gap:16px;border:1px solid #292c33;background:#0b0c0f;border-radius:10px;padding:13px 14px}
-.account-row span{color:#777c86;font-size:11px}
-.account-row b{font-size:12px;text-align:right}
-.account-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.account-actions .btn{text-align:center;border:0;cursor:pointer}
+
+.member-card{max-width:880px}
+.member-card>.eyebrow{margin-bottom:0}
+.member-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.member-header>div{max-width:520px}
+.account-actions-top{display:flex;gap:9px;flex:0 0 auto}
+.account-actions-top .btn{white-space:nowrap}
+
+.account-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:22px 0}
+.account-row{display:flex;flex-direction:column;gap:5px;border:1px solid #292c33;background:#0b0c0f;border-radius:10px;padding:13px 14px}
+.account-row span{color:#777c86;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.account-row b{font-size:15px}
+
 .auth-card .portal-note{margin-top:15px;color:#686d78;font-size:10px;text-align:center}
-.settings-sections{display:grid;gap:10px;margin:22px 0}
-.settings-section{border:1px solid #292c33;background:#0b0c0f;border-radius:12px;padding:15px}
+
+.settings-sections{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.settings-section{border:1px solid #292c33;background:#0b0c0f;border-radius:12px;padding:16px}
 .settings-section h3{font-size:13px;margin:0 0 4px}.settings-section>div>p{font-size:10px;color:#747985;margin:0;line-height:1.45}
 .settings-form{margin-top:14px}.settings-form label{margin-bottom:7px}.settings-form input{margin-bottom:10px}
 .settings-control{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.settings-control input{margin:0}.settings-control .btn{white-space:nowrap;padding:13px 14px}
 .settings-msg{min-height:16px;margin-top:9px;font-size:10px;color:#9ca1ab}.settings-msg.success{color:#9ee6b4}.settings-msg.error{color:#fca5a5}
-.billing-section{display:flex;align-items:center;justify-content:space-between;gap:18px}.billing-actions{display:flex;gap:7px;flex:0 0 auto}.billing-actions .btn{text-align:center;white-space:nowrap}
-@media(max-width:900px){.account-page{grid-template-columns:1fr;gap:42px;min-height:auto;padding:54px 0 70px}.account-intro{max-width:680px}.account-intro h1{font-size:48px}.auth-card,.member-card{grid-column:1;max-width:540px}}
-@media(max-width:500px){.account-page{padding-top:40px;gap:32px}.account-intro h1{font-size:40px}.account-benefits{margin-top:28px}.auth-card{padding:22px;border-radius:17px}.account-actions{grid-template-columns:1fr}.settings-control{grid-template-columns:1fr}.settings-control .btn{width:100%}.billing-section{align-items:flex-start;flex-direction:column}.billing-actions{display:grid;width:100%;grid-template-columns:1fr 1fr}}
+.billing-section{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px}.billing-actions{display:flex;gap:7px;flex:0 0 auto}.billing-actions .btn{text-align:center;white-space:nowrap}
+.delivery-section{grid-column:span 1}
+
+@media(max-width:900px){.settings-sections{grid-template-columns:1fr}.billing-section{grid-column:1}.account-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.account-page{padding:40px 16px}.auth-card,.member-card{padding:22px;border-radius:17px}.member-header{flex-direction:column}.account-actions-top{width:100%}.account-actions-top .btn{flex:1}.account-grid{grid-template-columns:1fr 1fr}.settings-control{grid-template-columns:1fr}.settings-control .btn{width:100%}.billing-section{align-items:flex-start;flex-direction:column}.billing-actions{display:grid;width:100%;grid-template-columns:1fr 1fr}}
 
 .notification-form select{width:100%;margin:0 0 14px;background:#0a0b0e;color:#fff;border:1px solid #30333b;border-radius:10px;padding:12px 14px;font:inherit;font-size:12px}
 .notification-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.notification-actions .btn{border:0;cursor:pointer}.notification-actions .btn:disabled{opacity:.55;cursor:wait}
 @media(max-width:500px){.notification-actions{grid-template-columns:1fr}}
-.delivery-list{display:grid;gap:7px;margin-top:13px}.delivery-empty{margin:0!important;padding:12px;border:1px dashed #30333b;border-radius:9px;color:#777c86!important;font-size:10px!important;line-height:1.5}.delivery-empty.error{color:#fca5a5!important}.delivery-row{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:10px 11px;border:1px solid #292c33;border-radius:9px;background:#101116}.delivery-row>div{display:grid;gap:3px}.delivery-row>div:last-child{text-align:right}.delivery-row b{font-size:10px}.delivery-row span,.delivery-row time{color:#747985;font-size:9px}.delivery-row strong{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#facc15}.delivery-row.sent strong{color:#86efac}.delivery-row.failed strong{color:#fca5a5}.delivery-refresh{margin-top:10px}.delivery-refresh:disabled{opacity:.55}@media(max-width:500px){.delivery-row{align-items:flex-start;flex-direction:column}.delivery-row>div:last-child{text-align:left}}
+.delivery-list{display:grid;gap:7px;margin-top:13px;max-height:220px;overflow:auto}.delivery-empty{margin:0!important;padding:12px;border:1px dashed #30333b;border-radius:9px;color:#777c86!important;font-size:10px!important;line-height:1.5}.delivery-empty.error{color:#fca5a5!important}.delivery-row{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:10px 11px;border:1px solid #292c33;border-radius:9px;background:#101116}.delivery-row>div{display:grid;gap:3px}.delivery-row>div:last-child{text-align:right}.delivery-row b{font-size:10px}.delivery-row span,.delivery-row time{color:#747985;font-size:9px}.delivery-row strong{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#facc15}.delivery-row.sent strong{color:#86efac}.delivery-row.failed strong{color:#fca5a5}.delivery-refresh{margin-top:10px}.delivery-refresh:disabled{opacity:.55}@media(max-width:500px){.delivery-row{align-items:flex-start;flex-direction:column}.delivery-row>div:last-child{text-align:left}}

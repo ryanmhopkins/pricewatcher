@@ -26,29 +26,6 @@
       </nav>
     </header>
     <main class="account-page">
-      <section class="account-intro" aria-labelledby="account-heading">
-        <div class="eyebrow">Your competitive edge</div>
-        <h1 id="account-heading">Pricing intelligence starts here.</h1>
-        <p class="lead">Create a private workspace for your competitor monitors, change history, alerts, and subscription.</p>
-        <div class="account-benefits" aria-label="PlanSentry benefits">
-          <div>
-<span>01</span>
-<p>
-<b>Track the right pages.</b> Keep every competitor and pricing URL organized in one workspace.</p>
-</div>
-          <div>
-<span>02</span>
-<p>
-<b>See meaningful changes.</b> Separate pricing signals from routine page edits.</p>
-</div>
-          <div>
-<span>03</span>
-<p>
-<b>Act while it matters.</b> Review history and send alerts to the tools your team already uses.</p>
-</div>
-        </div>
-        <p class="account-trust">Secure authentication by Supabase · Billing by Stripe</p>
-      </section>
       <section class="auth-card" id="auth-card" aria-labelledby="auth-title">
         <div class="eyebrow">PlanSentry account</div>
         <h2 id="auth-title">Welcome back</h2>
@@ -73,9 +50,17 @@
         <p class="auth-fineprint">New accounts require email confirmation. If you purchased a plan, use the same email address from Stripe Checkout.</p>
       </section>
       <section class="auth-card member-card" id="member-card" aria-labelledby="member-title" hidden>
-        <div class="eyebrow">Account settings</div>
+        <div class="member-header">
+<div>
+<div class="eyebrow">Account settings</div>
 <h2 id="member-title">Manage your account</h2>
 <p>Update your sign-in details, plan, and billing preferences.</p>
+</div>
+<div class="account-actions-top">
+<a class="btn primary" href="/app">Back to dashboard</a>
+<button class="btn secondary" id="account-signout" type="button">Sign out</button>
+</div>
+</div>
         <div class="account-grid">
 <div class="account-row">
 <span>Email</span>
@@ -175,10 +160,6 @@
 </div>
 </section>
         </div>
-        <div class="account-actions">
-<a class="btn primary" href="/app">Back to dashboard</a>
-<button class="btn secondary" id="account-signout" type="button">Sign out</button>
-</div>
       </section>
     </main>
   </div>
