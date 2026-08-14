@@ -26,7 +26,8 @@
 </nav>
 </header>
 <main id="main">
-<section class="hero">
+<section class="hero hero-split">
+<div class="hero-copy">
 <div class="eyebrow">Competitor pricing & packaging intelligence</div>
 <h1>See every move behind <em>the price.</em>
 </h1>
@@ -40,20 +41,26 @@
 <span>Baseline captured immediately</span>
 <span>Built for SaaS pricing pages</span>
 </div>
-<div class="mock">
-<div class="mock-row">
-<div>
-<div class="mock-title">Northstar Pro</div>
-<div class="mock-url">northstar.example/pricing · checked 4 minutes ago</div>
-<div class="change-demo">
-<b>High-impact pricing move</b>
-<div class="down">− Pro · $29/month · 100 GB storage</div>
-<div class="up">+ Pro · $39/month · 250 GB storage</div>
-<div class="signal-note">Annual savings changed from 20% to 30%</div>
 </div>
+<div class="doc" aria-label="Example detected pricing change">
+<div class="doc-head">
+<b>northstar.example/pricing</b>
+<span>CAPTURED · 4 MIN AGO</span>
 </div>
-<span class="pill">Detected</span>
+<div class="doc-row">
+<span class="doc-plan">Pro — per seat / month</span>
+<span><span class="doc-price-old">$29</span><span class="doc-price-new">$39</span></span>
 </div>
+<div class="doc-row">
+<span class="doc-plan">Included storage</span>
+<span><span class="doc-price-old">100 GB</span><span class="doc-price-new">250 GB</span></span>
+</div>
+<div class="doc-row">
+<span class="doc-plan">Annual plan savings</span>
+<span><span class="doc-price-old">20%</span><span class="doc-price-new">30%</span></span>
+</div>
+<div class="doc-margin-note">Pro raised 34% · storage and annual savings both increased same day</div>
+<div class="doc-stamp">Detected</div>
 </div>
 </section>
 <section class="proof-strip" aria-label="PlanSentry coverage">
