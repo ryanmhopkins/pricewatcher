@@ -19,8 +19,8 @@
 <span>↗</span>PlanSentry</a>
 <nav class="nav" aria-label="Primary navigation">
 <a class="active" href="/">Home</a>
-<a href="/features.html">Features</a>
-<a href="/pricing.html">Pricing</a>
+<a href="/#features">Features</a>
+<a href="/#pricing">Pricing</a>
 <a href="/faq.html">FAQ</a>
 <a class="cta" href="/app">Open app</a>
 </nav>
@@ -28,13 +28,13 @@
 <main id="main">
 <section class="hero hero-split">
 <div class="hero-copy">
-<div class="eyebrow">Competitor pricing & packaging intelligence</div>
+<div class="eyebrow">A Chrome extension for competitor pricing</div>
 <h1>See every move behind <em>the price.</em>
 </h1>
-<p class="lead">PlanSentry monitors competitor pricing pages and turns changes to prices, plans, limits, features, and annual offers into structured intelligence your team can act on.</p>
+<p class="lead">Add PlanSentry to Chrome, pick the prices on a competitor's pricing page, and it watches them for you — plans, limits, features, and annual offers included.</p>
 <div class="hero-actions">
-<a class="btn" href="/account.html">Start monitoring free →</a>
-<a class="btn secondary" href="/features.html">Explore the platform</a>
+<a class="btn" href="https://chromewebstore.google.com/detail/plansentry/faecpbgpdbplabjdibpbjfmdcjcnplpk" target="_blank" rel="noopener">Add to Chrome — it's free →</a>
+<a class="btn secondary" href="/#features">See how it works</a>
 </div>
 <div class="trust-line">
 <span>No card required</span>
@@ -105,7 +105,7 @@
 </div>
 </div>
 </section>
-<section class="section">
+<section class="section" id="features">
 <div class="section-head">
 <div class="eyebrow">One source of pricing truth</div>
 <h2>Follow the entire competitive offer—not just the number.</h2>
@@ -137,22 +137,77 @@
 </div>
 </div>
 </section>
+<section class="section" id="pricing">
+<div class="section-head">
+<div class="eyebrow">Simple, honest pricing</div>
+<h2>Free to try. $5/mo to track everything.</h2>
+<p class="muted">One free pricing page, or unlimited pages on Pro. No seats, no per-monitor overage, cancel anytime.</p>
+<div class="billing-toggle" role="group" aria-label="Pro plan billing period">
+<button type="button" data-billing="monthly" class="active" aria-pressed="true">Monthly</button>
+<button type="button" data-billing="annual" aria-pressed="false">Annual <span>Save 52%</span>
+</button>
+</div>
+</div>
+<div class="pricing pricing-two" aria-label="PlanSentry plans">
+<article class="price-card">
+<div class="price-name">Free</div>
+<div class="price">$0<small>/mo</small>
+</div>
+<p class="price-copy">Track the one competitor page you check most.</p>
+<ul class="features-list">
+<li>
+<strong>1 tracked pricing page</strong>
+</li>
+<li>Daily or weekly scheduled checks</li>
+<li>Manual checks and monitor health</li>
+<li>Structured plans, packaging, and annual offers</li>
+<li>Change history and review workflow</li>
+<li>JSON export</li>
+</ul>
+<a class="btn secondary" href="/account.html">Start free →</a>
+</article>
+<article class="price-card featured">
+<div class="price-card-top">
+<div class="price-name">Pro</div>
+<span class="best-value">Unlimited pages</span>
+</div>
+<div class="price">
+<span id="pro-price">$5</span>
+<small id="pro-suffix">/mo</small>
+</div>
+<div id="pro-detail" class="billing-detail">Billed monthly. Cancel anytime.</div>
+<p class="price-copy">For tracking your whole competitive set.</p>
+<ul class="features-list">
+<li>
+<strong>Unlimited tracked pricing pages</strong>
+</li>
+<li>Hourly, 6-hour, 12-hour, daily, or weekly checks</li>
+<li>Private screenshot comparison and price history</li>
+<li>Pricing matrix, groups, tags, and notes</li>
+<li>Email digests, immediate alerts, and webhooks</li>
+<li>Smart thresholds and structured change evidence</li>
+</ul>
+<a id="pro-cta" class="btn primary" href="https://buy.stripe.com/28E9ATgje5Yf7xs7XjaEE08">Choose monthly Pro →</a>
+</article>
+</div>
+<div class="note">Annual billing is $29/year for Pro — 52% less than paying monthly. Checkout is hosted securely by Stripe. Subscriptions renew until canceled, and billing can be managed from your account.</div>
+</section>
 <section class="section final-cta">
 <div>
 <div class="eyebrow">Your market will not stand still</div>
 <h2>Make every pricing move visible.</h2>
-<p class="muted">Start with three monitored pricing pages. Upgrade when you need faster checks or broader coverage.</p>
+<p class="muted">Start free with one monitored pricing page. Upgrade to Pro whenever you need more.</p>
 </div>
 <div class="hero-actions">
-<a class="btn" href="/account.html">Create a free account →</a>
-<a class="btn secondary" href="/pricing.html">Compare plans</a>
+<a class="btn" href="https://chromewebstore.google.com/detail/plansentry/faecpbgpdbplabjdibpbjfmdcjcnplpk" target="_blank" rel="noopener">Add to Chrome — it's free →</a>
+<a class="btn secondary" href="/#pricing">See pricing</a>
 </div>
 </section>
 </main>
 <footer class="footer">
 <span>© 2026 PlanSentry</span>
-<a href="/features.html">Features</a>
-<a href="/pricing.html">Pricing</a>
+<a href="/#features">Features</a>
+<a href="/#pricing">Pricing</a>
 <a href="/faq.html">FAQ</a>
 <a href="/status.html">Status</a>
 <a href="/contact.html">Contact</a>
@@ -160,5 +215,7 @@
 <a href="/terms.html">Terms</a>
 </footer>
 </div>
+<script src="/pricing.js?v=5">
+</script>
 </body>
 </html>

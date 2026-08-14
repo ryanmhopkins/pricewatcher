@@ -61,6 +61,8 @@ input,select,textarea{background:var(--ink)!important;color:var(--text)!importan
 .status-card.degraded .status-indicator{background:var(--amber)!important}
 .status-card.outage,.status-card.unknown{border-color:var(--alert-dim)!important;background:var(--ink-2)!important}
 .status-card.outage .status-indicator,.status-card.unknown .status-indicator{background:var(--alert)!important}
+.pricing-two{margin:0 auto}
+.billing-toggle{margin:20px auto 0!important}
 
 /* document / receipt style callouts — anything meant to look like a captured pricing page */
 .doc,[class*="capture"],[class*="snapshot-card"]{background:var(--paper)!important;color:#2a241a!important;border-radius:2px!important}

@@ -8,17 +8,28 @@ const HEADERS = {
   "Content-Type": "application/json",
 };
 
-const PRICE_TO_PLAN: Record<string, "plus" | "pro"> = {
-  price_1U3fceELIgx07EKQ0n2sElNS: "plus",
-  price_1U3fclELIgx07EKQrCESMctQ: "plus",
+// PlanSentry sells a single paid tier ("pro"): $5/mo or $29/yr, unlimited
+// tracked pages. Free is 1 tracked page. Older Plus/Pro/Business prices are
+// archived in Stripe and retained here only so any legacy subscriber who
+// never migrated keeps their existing entitlement.
+const PRICE_TO_PLAN: Record<string, "pro"> = {
+  price_1U4RaDELIgx07EKQcQhv6yWu: "pro", // Pro monthly $5
+  price_1U4RaLELIgx07EKQhUENC8sp: "pro", // Pro annual $29
+  // Retired prices, retained so existing customers keep their entitlement.
   price_1U2u56ELIgx07EKQwjeDj2Bd: "pro",
   price_1U3InhELIgx07EKQoNmA1xtR: "pro",
-  // Retained so existing customers on retired prices keep their entitlement.
   price_1U3IjqELIgx07EKQo0g2tjjN: "pro",
   price_1U2u5FELIgx07EKQimxeU1nD: "pro",
+  price_1U3fceELIgx07EKQ0n2sElNS: "pro",
+  price_1U3fclELIgx07EKQrCESMctQ: "pro",
+  price_1U49nuELIgx07EKQQdDVPKlb: "pro",
 };
 
 const PAID_STATUSES = new Set(["active", "trialing", "past_due"]);
+
+// A v4 UUID with dashes, which is what Supabase auth.users.id looks like.
+// client_reference_id is only trusted as a user_id match if it looks like one.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), {
   status,
@@ -75,8 +86,7 @@ function safeEqual(left: string, right: string) {
 
 function planFor(priceId: string | null, metadata: Record<string, unknown> | null | undefined) {
   const metadataPlan = String(metadata?.plan || "").toLowerCase();
-  if (metadataPlan === "plus" || metadataPlan === "pro") return metadataPlan;
-  if (metadataPlan === "business") return "pro";
+  if (metadataPlan === "pro" || metadataPlan === "plus" || metadataPlan === "business") return "pro";
   return priceId ? PRICE_TO_PLAN[priceId] || "free" : "free";
 }
 
@@ -84,13 +94,27 @@ function paidPlan(status: string, priceId: string | null, metadata: Record<strin
   return PAID_STATUSES.has(status) ? planFor(priceId, metadata) : "free";
 }
 
-async function syncUserAccounts(entitlement: Record<string, unknown>) {
+// Prefer a hard match on user_id (from Stripe's client_reference_id, threaded
+// through at checkout) over the previous email ilike match, which is fuzzy
+// and silently does nothing if the checkout email differs from the account
+// email. user_id match is attempted first and, if it hits, short-circuits
+// the email fallback so we never patch two different accounts for one event.
+async function syncUserAccounts(entitlement: Record<string, unknown>, userId?: string | null) {
+  if (userId && UUID_RE.test(userId)) {
+    const matched = await update(
+      "user_accounts",
+      `user_id=eq.${encodeURIComponent(userId)}`,
+      entitlement,
+    );
+    if (Array.isArray(matched) && matched.length) return;
+  }
   if (entitlement.stripe_customer_id) {
-    await update(
+    const matched = await update(
       "user_accounts",
       `stripe_customer_id=eq.${encodeURIComponent(String(entitlement.stripe_customer_id))}`,
       entitlement,
     );
+    if (Array.isArray(matched) && matched.length) return;
   }
   if (entitlement.email) {
     await update(
@@ -101,7 +125,7 @@ async function syncUserAccounts(entitlement: Record<string, unknown>) {
   }
 }
 
-async function putEntitlement(data: Record<string, unknown>) {
+async function putEntitlement(data: Record<string, unknown>, userId?: string | null) {
   const row = {
     stripe_customer_id: String(data.stripe_customer_id),
     stripe_subscription_id: data.stripe_subscription_id || null,
@@ -122,7 +146,7 @@ async function putEntitlement(data: Record<string, unknown>) {
     current_period_end: saved.current_period_end,
     updated_at: new Date().toISOString(),
     email: saved.email,
-  });
+  }, userId);
   return saved;
 }
 
@@ -170,6 +194,7 @@ Deno.serve(async (request) => {
       const customerId = typeof object.customer === "string" ? object.customer : object.customer?.id;
       const subscriptionId = typeof object.subscription === "string" ? object.subscription : object.subscription?.id;
       const email = object.customer_details?.email || object.customer_email || null;
+      const clientReferenceId = typeof object.client_reference_id === "string" ? object.client_reference_id : null;
       if (customerId) {
         await putEntitlement({
           stripe_customer_id: customerId,
@@ -177,7 +202,7 @@ Deno.serve(async (request) => {
           email,
           plan: planFor(null, object.metadata),
           subscription_status: "active",
-        });
+        }, clientReferenceId);
       }
     } else if (event.type.startsWith("customer.subscription.")) {
       const customerId = typeof object.customer === "string" ? object.customer : object.customer?.id;
