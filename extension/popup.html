@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PlanSentry</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="popup-font.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="brand"><span class="mark">P</span><strong>PlanSentry</strong></div>
+      <div class="header-tools"><span id="usage"></span><button id="refresh" class="icon" type="button" aria-label="Refresh">↻</button><div id="account-menu" class="account-menu" hidden><button id="account-trigger" class="account-trigger" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Account menu"><span id="account-initial">A</span><i>⌄</i></button><div id="account-dropdown" class="account-dropdown" role="menu" hidden><div class="account-plan"><span>Current plan</span><strong id="account-plan">Free</strong></div><a href="https://plansentry.com/#pricing" target="_blank" role="menuitem"><strong>Upgrade to Pro</strong><span>Unlock unlimited tracked pages</span></a><a href="https://plansentry.com/account.html" target="_blank" role="menuitem"><strong>Account settings</strong><span>Email, password and billing</span></a><button id="signout" type="button" role="menuitem">Sign out</button></div></div></div>
+    </header>
+
+    <section id="loading" class="state">Loading…</section>
+
+    <section id="signed-out" class="auth" hidden>
+      <span class="auth-kicker">Welcome back</span>
+      <h1>Your pricing pages, one click away.</h1>
+      <form id="signin-form">
+        <input id="email" type="email" autocomplete="username" placeholder="Email" aria-label="Email" required>
+        <input id="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+        <button id="signin" type="submit">Sign in</button>
+      </form>
+      <a href="https://plansentry.com/account.html" target="_blank">Create account · Reset password</a>
+    </section>
+
+    <section id="dashboard" hidden>
+      <form id="quick-add" class="quick-add">
+        <input id="quick-url" type="url" inputmode="url" autocomplete="url" placeholder="Paste a pricing page URL" aria-label="Pricing page URL" required>
+        <button id="quick-submit" type="submit" aria-label="Track pricing page">+</button>
+      </form>
+
+      <section id="current-page" class="context" hidden>
+        <div class="context-copy"><span id="current-eyebrow">Current page</span><strong id="current-title"></strong><small id="current-url"></small></div>
+        <div id="current-tracked" class="context-actions" hidden><span class="tracked-pill">Tracked</span><button id="check-current" class="quiet" type="button">Check</button></div>
+        <div id="current-untracked" class="context-actions" hidden><button id="track" type="button">+ Track page</button><button id="customize" class="quiet" type="button">Name it</button></div>
+        <form id="custom-form" class="custom-form" hidden>
+          <input id="monitor-name" maxlength="120" aria-label="Monitor name" placeholder="Give this page a name">
+          <button type="submit">Add</button>
+        </form>
+      </section>
+
+      <section id="price-setup" class="price-setup" hidden>
+        <div class="setup-head"><div><span>Choose prices</span><strong>Select exactly what PlanSentry should track</strong></div><button id="setup-close" class="icon" type="button" aria-label="Close">×</button></div>
+        <p>Review each plan and price. Unselected prices will be ignored.</p>
+        <div id="setup-options" class="setup-options"></div>
+        <div class="setup-actions"><button id="setup-cancel" class="quiet" type="button">Cancel</button><button id="setup-save" type="button">Track selected</button></div>
+      </section>
+
+      <div class="list-head"><div><strong>Tracked</strong><span id="monitor-count"></span></div><input id="search" type="search" placeholder="Search" aria-label="Search tracked pages"></div>
+      <div id="monitor-list" class="monitor-list"></div>
+      <div id="empty" class="empty" hidden>Open a pricing page and track it here.</div>
+
+      <section id="peek" class="peek" hidden>
+        <div class="peek-head"><div><span id="peek-status" class="dot"></span><strong id="peek-name"></strong></div><span id="peek-date"></span></div>
+        <div id="peek-prices" class="peek-prices"></div>
+        <div class="peek-foot"><span id="peek-note"></span><div><button id="peek-targets" class="quiet" type="button">Choose prices</button><button id="peek-check" class="quiet" type="button">Check now</button><button id="peek-open" type="button">Visit page</button><button id="peek-remove" class="danger" type="button">Remove</button></div></div>
+      </section>
+
+    </section>
+    <div id="message" role="status" aria-live="polite"></div>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

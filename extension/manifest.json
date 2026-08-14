@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "PlanSentry",
+  "description": "Add the pricing page you are viewing to your PlanSentry account.",
+  "version": "0.9.2",
+  "minimum_chrome_version": "114",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": ["sidePanel", "storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "https://hmsldwpcaupanooestfr.supabase.co/*"
+  ],
+  "action": {
+    "default_title": "Open PlanSentry",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none'"
+  }
+}
