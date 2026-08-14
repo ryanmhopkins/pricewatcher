@@ -1,0 +1,64 @@
+/* PlanSentry — Redline theme layer. Loaded after every page-specific stylesheet. */
+:root{
+  --ink:#0b0d10;--ink-2:#111418;--paper:#f1ead9;--paper-2:#e8dfc9;
+  --line:#23262b;--line-soft:#1a1c20;--text:#e9e6dd;--muted:#8d9089;--muted-2:#5f6259;
+  --amber:#d9903f;--amber-dim:#7a5a2e;--signal:#77ab8d;--signal-dim:#33453b;
+  --alert:#c15a41;--alert-dim:#4a2b23;
+  --font-serif:ui-serif,"Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --font-sans:-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-mono:ui-monospace,"SF Mono","Cascadia Code","Roboto Mono",monospace;
+}
+
+html{background:var(--ink)!important;color:var(--text)!important;font-family:var(--font-sans)!important;scroll-behavior:smooth}
+body{background:radial-gradient(circle at 50% -15%,#161a20 0,transparent 34%),var(--ink)!important;color:var(--text)!important;min-height:100vh}
+::selection{background:var(--amber);color:#211605}
+a{color:inherit}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--amber)!important;outline-offset:2px}
+
+h1,h2,h3,.hero h1,.page-hero h1,.section h2,.card h2,.panel h3{font-family:var(--font-serif)!important;font-weight:500!important;letter-spacing:-.01em!important}
+.hero em,.page-hero em,.eyebrow,.kicker{font-family:inherit}
+.hero em,.page-hero em{font-style:italic!important;color:var(--muted)!important;font-family:var(--font-serif)!important}
+
+/* numbers, prices, timestamps read as ledger data wherever they appear */
+.stats b,.mono,td,.price,.amount,[class*="price"],[class*="amount"],[class*="delta"],time,.timestamp{font-family:var(--font-mono)}
+.stats b{font-variant-numeric:tabular-nums}
+
+/* borders + panels: swap the old near-black borders/cards for the ink system, smaller radius */
+[class*="header"]:not(.header-actions),header{border-color:var(--line-soft)!important}
+[class*="card"],[class*="panel"],.mock,[class*="detail-hero"],[class*="admin-hero"],[class*="auth-card"],[class*="status-card"],[class*="member-card"]{
+  background:var(--ink-2)!important;border:1px solid var(--line)!important;border-radius:6px!important;
+}
+.gate-card{background:var(--ink-2)!important;border:1px solid var(--line)!important;border-radius:8px!important}
+
+/* buttons: amber primary, hairline secondary, small radius everywhere */
+button:not(.icon):not(.ghost):not(.quiet):not(.delete):not(.tiny),
+.btn,.account-entry,.nav .cta{
+  background:var(--amber)!important;color:#211605!important;border-radius:4px!important;font-weight:600!important;border:0!important;
+}
+.btn.secondary,.ghost,.quiet,button.secondary{
+  background:transparent!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:4px!important;
+}
+.delete,.danger{background:transparent!important;color:var(--alert)!important;border:1px solid var(--alert-dim)!important;border-radius:4px!important}
+input,select,textarea{background:var(--ink)!important;color:var(--text)!important;border:1px solid var(--line)!important;border-radius:4px!important}
+
+/* status / pill / badge semantics: signal=ok, alert=changed or error, amber-dim=paused/pending */
+.status,.pill,.plan-pill,.plan-badge,.chip,[class*="status-indicator"],[class*="badge"]{
+  border-radius:99px!important;background:var(--ink)!important;color:var(--muted)!important;border:1px solid var(--line)!important;
+}
+.status.ok,.status.active,.pill.ok,.chip.ok,[class*="status"].ok{background:var(--signal-dim)!important;color:var(--signal)!important;border-color:var(--signal-dim)!important}
+.status.error,.pill.error,.chip.alert,.chip.error,[class*="status"].error{background:var(--alert-dim)!important;color:var(--alert)!important;border-color:var(--alert-dim)!important}
+.status.paused,.pill.paused,[class*="status"].paused,[class*="status"].pending{background:var(--amber-dim)!important;color:var(--amber)!important;border-color:var(--amber-dim)!important}
+.plus{color:var(--signal)!important}
+.minus{color:var(--alert)!important}
+
+/* document / receipt style callouts — anything meant to look like a captured pricing page */
+.doc,[class*="capture"],[class*="snapshot-card"]{background:var(--paper)!important;color:#2a241a!important;border-radius:2px!important}
+
+.muted,.lead,small,[class*="muted"]{color:var(--muted)!important}
+.kicker,.eyebrow,[class*="eyebrow"]{color:var(--amber)!important;letter-spacing:.14em!important}
+
+table,[class*="table-wrap"]{border-color:var(--line-soft)!important}
+th{color:var(--muted-2)!important;font-family:var(--font-mono)!important;letter-spacing:.06em;text-transform:uppercase;font-size:10.5px!important}
+tr,[class*="row"]{border-color:var(--line-soft)!important}
+
+footer,[class*="footer"]{border-color:var(--line-soft)!important;color:var(--muted-2)!important}
