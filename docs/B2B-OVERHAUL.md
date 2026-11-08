@@ -40,13 +40,13 @@ PlanSentry is a competitive pricing and packaging intelligence workspace for Saa
 - Reuse interaction patterns from Linear, Stripe Dashboard, Attio, and Mobbin research; avoid copying assets.
 
 ## Billing guardrails
-- Dedicated PlanSentry Stripe account must be authorized by owner before any live product/price creation.
-- Proposed Free / Growth $29 monthly / Business $79 monthly are hypotheses, not approved live prices.
+- Dedicated PlanSentry Stripe account holds the approved Growth $19 monthly and Business $49 monthly prices.
+- Free allows 3 monitors, Growth 25, and Business 100. Legacy Pro subscribers retain their prior allowance.
 - No unlimited-monitor promise before cost measurements.
 - Preserve current customer entitlements; test checkout, webhook idempotency, portal, upgrades, downgrades, and cancellation in test mode before live.
 
 ## Release gates
-- No production merge before automated tests and manual smoke tests pass.
+- Pricing copy may be published while paid checkout remains disabled. Enable live checkout only after the subscription lifecycle is verified end to end.
 - Confirm existing account and monitoring data remain intact.
 - No secrets in commits, PRs, or logs.
 - Pilot with 5 paying organizations and monitor check-success rate, false-positive rate, activation, and retention.
