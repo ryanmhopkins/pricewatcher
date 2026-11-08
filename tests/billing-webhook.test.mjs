@@ -68,6 +68,11 @@ assert.equal(user.plan, 'growth', 'late checkout cannot downgrade an entitlement
 subscription.items.data[0].price.id = 'price_1UZZ3oLoEh09m2mcDKSem4SN';
 assert.equal((await deliver('customer.subscription.updated', subscription)).status, 200);
 assert.equal(user.plan, 'business');
+assert.equal((await deliver('invoice.payment_failed', { customer })).status, 200);
+assert.equal(user.subscription_status, 'past_due');
+assert.equal(user.plan, 'business', 'a temporary payment failure keeps the existing grace-period entitlement');
+assert.equal((await deliver('invoice.paid', { customer })).status, 200);
+assert.equal(user.subscription_status, 'active');
 subscription.status = 'canceled';
 assert.equal((await deliver('customer.subscription.deleted', subscription)).status, 200);
 assert.equal(user.plan, 'free');
