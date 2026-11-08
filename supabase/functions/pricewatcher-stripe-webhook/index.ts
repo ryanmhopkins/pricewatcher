@@ -176,11 +176,12 @@ Deno.serve(async (request) => {
     const signatures = signatureParts.filter((part) => part.startsWith("v1=")).map((part) => part.slice(3));
     if (!timestamp || !signatures.length) return json({ error: "Missing Stripe signature" }, 400);
 
-    const config = (await select("stripe_webhook_config?select=signing_secret,plansentry_signing_secret&limit=1"))[0];
+    const config = (await select("stripe_webhook_config?select=signing_secret,plansentry_signing_secret,plansentry_sandbox_signing_secret&limit=1"))[0];
     const signingSecrets = [
-      { secret: config?.signing_secret, legacy: true },
-      { secret: config?.plansentry_signing_secret, legacy: false },
-    ].filter((entry): entry is { secret: string; legacy: boolean } =>
+      { secret: config?.signing_secret, legacy: true, sandbox: false },
+      { secret: config?.plansentry_signing_secret, legacy: false, sandbox: false },
+      { secret: config?.plansentry_sandbox_signing_secret, legacy: false, sandbox: true },
+    ].filter((entry): entry is { secret: string; legacy: boolean; sandbox: boolean } =>
       typeof entry.secret === "string" && entry.secret.length > 0);
     if (!signingSecrets.length) return json({ error: "Webhook secret not configured" }, 503);
     if (!/^[0-9]+$/.test(timestamp) || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) {
@@ -195,10 +196,31 @@ Deno.serve(async (request) => {
     if (!matched) {
       return json({ error: "Invalid Stripe signature" }, 400);
     }
-    const allowEmailFallback = matched.legacy;
-
     const event = JSON.parse(rawBody);
+    if (matched.sandbox) {
+      if (event.livemode !== false) return json({ error: "Sandbox signature requires a sandbox event" }, 400);
+      return json({ received: true, sandbox: true });
+    }
+    if (event.livemode === false) return json({ error: "Sandbox event requires sandbox signature" }, 400);
+    const allowEmailFallback = matched.legacy;
     const object = event.data?.object || {};
+
+    if (["charge.refunded", "charge.dispute.created", "radar.early_fraud_warning.created"].includes(event.type)) {
+      if (typeof event.id !== "string" || !event.id.startsWith("evt_") || !Number.isFinite(event.created)) {
+        return json({ error: "Invalid risk event" }, 400);
+      }
+      const charge = event.type === "charge.refunded" ? object : object.charge;
+      await upsert("billing_risk_events", {
+        event_id: event.id,
+        event_type: event.type,
+        stripe_customer_id: typeof object.customer === "string" ? object.customer : null,
+        stripe_charge_id: typeof charge === "string" ? charge : charge?.id || null,
+        stripe_payment_intent_id: typeof object.payment_intent === "string" ? object.payment_intent : null,
+        stripe_invoice_id: typeof object.invoice === "string" ? object.invoice : null,
+        event_created_at: new Date(event.created * 1000).toISOString(),
+      }, "event_id");
+      return json({ received: true });
+    }
 
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       const customerId = typeof object.customer === "string" ? object.customer : object.customer?.id;

@@ -7,8 +7,9 @@ import vm from 'node:vm';
 const source = readFileSync(new URL('../supabase/functions/pricewatcher-stripe-webhook/index.ts', import.meta.url), 'utf8')
   .replace(/^import "jsr:[^\n]+\n/, '');
 const tables = {
-  stripe_webhook_config: [{ signing_secret: 'legacy-test-secret', plansentry_signing_secret: 'new-test-secret' }],
+  stripe_webhook_config: [{ signing_secret: 'legacy-test-secret', plansentry_signing_secret: 'new-test-secret', plansentry_sandbox_signing_secret: 'sandbox-test-secret' }],
   stripe_entitlements: [],
+  billing_risk_events: [],
   user_accounts: [{ user_id: '11111111-1111-4111-8111-111111111111', email: 'owner@example.test', plan: 'free' }],
 };
 let handler;
@@ -28,7 +29,7 @@ const fetch = async (url, init = {}) => {
   if (!init.method || init.method === 'GET') return Response.json(rows.filter(match));
   if (init.method === 'POST') {
     const input = JSON.parse(init.body);
-    const existing = rows.find((row) => row.stripe_customer_id === input.stripe_customer_id);
+    const existing = rows.find((row) => input.event_id ? row.event_id === input.event_id : row.stripe_customer_id === input.stripe_customer_id);
     if (existing) Object.assign(existing, input);
     else rows.push(input);
     return Response.json([existing || input]);
@@ -46,8 +47,8 @@ const context = {
 };
 vm.runInNewContext(stripTypeScriptTypes(source), context);
 
-async function deliver(type, object, secret = 'new-test-secret') {
-  const body = JSON.stringify({ id: `evt_${type}`, type, data: { object } });
+async function deliver(type, object, secret = 'new-test-secret', livemode = true) {
+  const body = JSON.stringify({ id: `evt_${type}`, type, livemode, created: Math.floor(Date.now() / 1000), data: { object } });
   const timestamp = Math.floor(Date.now() / 1000);
   const digest = createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex');
   return handler(new Request('https://example.supabase.co/functions/v1/pricewatcher-stripe-webhook', {
@@ -84,4 +85,16 @@ const legacy = { ...subscription, id: 'sub_legacy', customer: 'cus_legacy', item
 assert.equal((await deliver('customer.subscription.created', legacy, 'legacy-test-secret')).status, 200);
 assert.equal(tables.stripe_entitlements.find((row) => row.stripe_customer_id === 'cus_legacy').plan, 'pro');
 assert.equal((await deliver('customer.subscription.created', legacy, 'wrong-secret')).status, 400);
+const entitlementCount = tables.stripe_entitlements.length;
+assert.equal((await deliver('customer.subscription.created', subscription, 'sandbox-test-secret', false)).status, 200);
+assert.equal(tables.stripe_entitlements.length, entitlementCount, 'sandbox events cannot write production entitlements');
+assert.equal((await deliver('customer.subscription.created', subscription, 'sandbox-test-secret', true)).status, 400);
+assert.equal((await deliver('customer.subscription.created', subscription, 'new-test-secret', false)).status, 400);
+assert.equal((await deliver('charge.dispute.created', { id: 'dp_test', charge: 'ch_test', payment_intent: 'pi_test' })).status, 200);
+assert.equal((await deliver('charge.dispute.created', { id: 'dp_test', charge: 'ch_test', payment_intent: 'pi_test' })).status, 200);
+assert.equal(tables.billing_risk_events.length, 1, 'risk events are idempotent');
+assert.equal(tables.billing_risk_events[0].stripe_charge_id, 'ch_test');
+assert.equal((await deliver('charge.refunded', { id: 'ch_refund', customer, invoice: 'in_test' })).status, 200);
+assert.equal((await deliver('radar.early_fraud_warning.created', { id: 'issfr_test', charge: 'ch_test' })).status, 200);
+assert.equal(tables.billing_risk_events.length, 3);
 console.log('Billing webhook lifecycle tests passed');
