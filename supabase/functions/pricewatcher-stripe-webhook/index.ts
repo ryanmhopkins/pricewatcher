@@ -260,9 +260,20 @@ Deno.serve(async (request) => {
         ? new Date(Number(periodEnd) * 1000).toISOString()
         : null;
       const existing = customerId
-        ? (await select(`stripe_entitlements?stripe_customer_id=eq.${encodeURIComponent(customerId)}&select=email&limit=1`))[0]
+        ? (await select(`stripe_entitlements?stripe_customer_id=eq.${encodeURIComponent(customerId)}&select=email,stripe_subscription_id,subscription_status&limit=1`))[0]
         : null;
       if (customerId) {
+        // Stripe can deliver events out of order. A canceled subscription cannot
+        // become active again, and an old subscription's deletion must not
+        // revoke access from a newer subscription on the same customer.
+        if (existing?.stripe_subscription_id === object.id &&
+          existing.subscription_status === "canceled" && status !== "canceled") {
+          return json({ received: true });
+        }
+        if (status === "canceled" && existing?.stripe_subscription_id &&
+          existing.stripe_subscription_id !== object.id) {
+          return json({ received: true });
+        }
         await putEntitlement({
           stripe_customer_id: customerId,
           stripe_subscription_id: object.id,
