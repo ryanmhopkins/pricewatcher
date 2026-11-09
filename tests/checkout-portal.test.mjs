@@ -21,17 +21,20 @@ const env = {
   STRIPE_SECRET_KEY: 'test-legacy-key',
 };
 let account = { plan: 'free', subscription_status: null, stripe_customer_id: null, stripe_price_id: null };
+let paidCheckoutEnabled = false;
 let stripeAccountId = 'acct_1UZYXlLoEh09m2mc';
 let checkoutCalls = 0;
 const checkoutFetch = async (url, init = {}) => {
   const path = new URL(url).pathname;
   if (path === '/auth/v1/user') return Response.json({ id: '11111111-1111-4111-8111-111111111111', email: 'owner@example.test' });
   if (path === '/rest/v1/user_accounts') return Response.json([account]);
+  if (path === '/rest/v1/stripe_webhook_config') return Response.json([{ plansentry_checkout_enabled: paidCheckoutEnabled }]);
   if (path === '/v1/account') return Response.json({ id: stripeAccountId });
   if (path === '/v1/checkout/sessions') {
     checkoutCalls++;
     assert.equal(init.headers.Authorization, 'Bearer test-new-key');
     assert.equal(new URLSearchParams(init.body).get('line_items[0][price]'), 'price_1UZZ3lLoEh09m2mcjIg1nsEZ');
+    assert.equal(new URLSearchParams(init.body).get('managed_payments[enabled]'), 'false');
     return Response.json({ url: 'https://checkout.stripe.com/test-session' });
   }
   throw new Error(`Unexpected checkout request ${url}`);
@@ -41,6 +44,8 @@ const checkoutRequest = (authorization = 'Bearer test-token') => new Request('ht
   method: 'POST', headers: { authorization }, body: JSON.stringify({ plan: 'growth' }),
 });
 assert.equal((await checkout(checkoutRequest(''))).status, 401);
+assert.equal((await checkout(checkoutRequest())).status, 503, 'paid checkout stays closed until explicitly enabled');
+paidCheckoutEnabled = true;
 assert.equal((await checkout(checkoutRequest())).status, 200);
 assert.equal(checkoutCalls, 1);
 account = { ...account, plan: 'pro', subscription_status: 'active' };

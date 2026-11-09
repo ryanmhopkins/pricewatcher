@@ -35,6 +35,16 @@ async function accountFor(userId: string) {
   return (await response.json())[0] || null;
 }
 
+async function checkoutEnabled() {
+  const response = await fetch(
+    `${SUPABASE_URL}/rest/v1/stripe_webhook_config?select=plansentry_checkout_enabled&limit=1`,
+    { headers: { apikey: SERVICE_KEY, Authorization: `Bearer ${SERVICE_KEY}` } },
+  );
+  if (!response.ok) return false;
+  const rows = await response.json();
+  return rows[0]?.plansentry_checkout_enabled === true;
+}
+
 async function stripeAccountMatches() {
   const response = await fetch("https://api.stripe.com/v1/account", {
     headers: { Authorization: `Bearer ${STRIPE_KEY}` },
@@ -52,6 +62,7 @@ Deno.serve(async (request) => {
   try {
     const user = await signedInUser(request.headers.get("authorization") || "");
     if (!user?.id) return json({ error: "Sign in required" }, 401);
+    if (!await checkoutEnabled()) return json({ error: "Paid checkout is not open yet" }, 503);
     const body = await request.json().catch(() => ({}));
     const plan = String(body.plan || "");
     if (!Object.hasOwn(PRICES, plan)) return json({ error: "Invalid plan" }, 400);
@@ -68,6 +79,7 @@ Deno.serve(async (request) => {
       client_reference_id: user.id,
       "metadata[plan]": plan,
       "subscription_data[metadata][plan]": plan,
+      "managed_payments[enabled]": "false",
       success_url: "https://plansentry.com/account.html?checkout=success",
       cancel_url: "https://plansentry.com/#pricing",
     });
