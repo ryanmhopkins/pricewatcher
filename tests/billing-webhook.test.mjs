@@ -1,0 +1,133 @@
+import assert from 'node:assert/strict';
+import { createHmac, webcrypto } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { stripTypeScriptTypes } from 'node:module';
+import vm from 'node:vm';
+
+const source = readFileSync(new URL('../supabase/functions/pricewatcher-stripe-webhook/index.ts', import.meta.url), 'utf8')
+  .replace(/^import "jsr:[^\n]+\n/, '');
+const tables = {
+  stripe_webhook_config: [{ signing_secret: 'legacy-test-secret', plansentry_signing_secret: 'new-test-secret', plansentry_sandbox_signing_secret: 'sandbox-test-secret' }],
+  stripe_entitlements: [],
+  billing_risk_events: [],
+  user_accounts: [{ user_id: '11111111-1111-4111-8111-111111111111', email: 'owner@example.test', plan: 'free' }],
+};
+let handler;
+const fetch = async (url, init = {}) => {
+  const parsed = new URL(url);
+  if (parsed.pathname.endsWith('/rpc/link_plansentry_checkout')) {
+    const { p_customer_id, p_subscription_id, p_user_id, p_email } = JSON.parse(init.body);
+    let entitlement = tables.stripe_entitlements.find((row) => row.stripe_customer_id === p_customer_id);
+    if (!entitlement) {
+      entitlement = { stripe_customer_id: p_customer_id, stripe_subscription_id: p_subscription_id, email: p_email, plan: 'free', subscription_status: 'pending' };
+      tables.stripe_entitlements.push(entitlement);
+    }
+    const matched = tables.user_accounts.filter((row) => p_user_id ? row.user_id === p_user_id : row.stripe_customer_id === p_customer_id);
+    matched.forEach((row) => Object.assign(row, {
+      stripe_customer_id: p_customer_id,
+      stripe_subscription_id: entitlement.stripe_subscription_id || p_subscription_id,
+      stripe_price_id: entitlement.stripe_price_id || null,
+      plan: entitlement.plan,
+      subscription_status: entitlement.subscription_status,
+      current_period_end: entitlement.current_period_end || null,
+    }));
+    return new Response(null, { status: 204 });
+  }
+  const table = parsed.pathname.split('/').at(-1);
+  const rows = tables[table];
+  assert.ok(rows, `Unexpected table ${table}`);
+  const query = parsed.searchParams;
+  const match = (row) => [...query].every(([key, value]) => {
+    if (!['stripe_customer_id', 'user_id', 'email'].includes(key)) return true;
+    const [op, expected] = value.split('.', 2);
+    return op === 'ilike'
+      ? String(row[key] || '').toLowerCase() === expected.toLowerCase()
+      : row[key] === expected;
+  });
+  if (!init.method || init.method === 'GET') return Response.json(rows.filter(match));
+  if (init.method === 'POST') {
+    const input = JSON.parse(init.body);
+    const existing = rows.find((row) => input.event_id ? row.event_id === input.event_id : row.stripe_customer_id === input.stripe_customer_id);
+    if (existing) Object.assign(existing, input);
+    else rows.push(input);
+    return Response.json([existing || input]);
+  }
+  if (init.method === 'PATCH') {
+    const found = rows.filter(match);
+    found.forEach((row) => Object.assign(row, JSON.parse(init.body)));
+    return Response.json(found);
+  }
+  throw new Error(`Unexpected method ${init.method}`);
+};
+const context = {
+  Deno: { env: { get: (name) => ({ SUPABASE_URL: 'https://example.supabase.co', SUPABASE_SERVICE_ROLE_KEY: 'test-service-key' })[name] }, serve: (fn) => { handler = fn; } },
+  fetch, Response, Request, URL, TextEncoder, crypto: webcrypto, Date, console,
+};
+vm.runInNewContext(stripTypeScriptTypes(source), context);
+
+async function deliver(type, object, secret = 'new-test-secret', livemode = true) {
+  const body = JSON.stringify({ id: `evt_${type}`, type, livemode, created: Math.floor(Date.now() / 1000), data: { object } });
+  const timestamp = Math.floor(Date.now() / 1000);
+  const digest = createHmac('sha256', secret).update(`${timestamp}.${body}`).digest('hex');
+  return handler(new Request('https://example.supabase.co/functions/v1/pricewatcher-stripe-webhook', {
+    method: 'POST', headers: { 'Stripe-Signature': `t=${timestamp},v1=${digest}` }, body,
+  }));
+}
+const customer = 'cus_new_test';
+const user = tables.user_accounts[0];
+const checkout = { customer, subscription: 'sub_new', client_reference_id: user.user_id, customer_details: { email: 'billing@example.test' }, metadata: { plan: 'business' } };
+assert.equal((await deliver('checkout.session.completed', checkout)).status, 200);
+assert.equal(user.plan, 'free', 'checkout metadata cannot grant a paid plan');
+const subscription = { id: 'sub_new', customer, status: 'active', items: { data: [{ price: { id: 'price_1UZZ3lLoEh09m2mcjIg1nsEZ' }, current_period_end: 2000000000 }] } };
+assert.equal((await deliver('customer.subscription.created', subscription)).status, 200);
+assert.equal(user.plan, 'growth');
+assert.equal(user.email, 'owner@example.test', 'Stripe billing email cannot replace the sign-in email');
+assert.ok(user.current_period_end, 'item-level period end is recorded');
+assert.equal((await deliver('checkout.session.completed', checkout)).status, 200);
+assert.equal(user.plan, 'growth', 'late checkout cannot downgrade an entitlement');
+const secondUser = { user_id: '22222222-2222-4222-8222-222222222222', email: 'second@example.test', plan: 'free' };
+tables.user_accounts.push(secondUser);
+const secondSubscription = { ...subscription, id: 'sub_second', customer: 'cus_second' };
+assert.equal((await deliver('customer.subscription.created', secondSubscription)).status, 200);
+assert.equal((await deliver('checkout.session.completed', { customer: 'cus_second', subscription: 'sub_second', client_reference_id: secondUser.user_id })).status, 200);
+assert.equal(secondUser.plan, 'growth', 'subscription arriving before checkout still grants access');
+subscription.items.data[0].price.id = 'price_1UZZ3oLoEh09m2mcDKSem4SN';
+assert.equal((await deliver('customer.subscription.updated', subscription)).status, 200);
+assert.equal(user.plan, 'business');
+assert.equal((await deliver('invoice.payment_failed', { customer })).status, 200);
+assert.equal(user.subscription_status, 'past_due');
+assert.equal(user.plan, 'business', 'a temporary payment failure keeps the existing grace-period entitlement');
+assert.equal((await deliver('invoice.paid', { customer })).status, 200);
+assert.equal(user.subscription_status, 'active');
+subscription.status = 'canceled';
+assert.equal((await deliver('customer.subscription.deleted', subscription)).status, 200);
+assert.equal(user.plan, 'free');
+subscription.status = 'active';
+assert.equal((await deliver('customer.subscription.updated', subscription)).status, 200);
+assert.equal(user.plan, 'free', 'late update cannot restore a canceled subscription');
+subscription.items.data[0].price.id = 'price_unknown';
+assert.equal((await deliver('customer.subscription.updated', subscription)).status, 200);
+assert.equal(user.plan, 'free', 'unrecognized prices cannot grant paid access');
+const replacement = { ...subscription, id: 'sub_replacement', items: { data: [{ price: { id: 'price_1UZZ3oLoEh09m2mcDKSem4SN' } }] } };
+assert.equal((await deliver('customer.subscription.created', replacement)).status, 200);
+assert.equal(user.plan, 'business');
+subscription.status = 'canceled';
+assert.equal((await deliver('customer.subscription.deleted', subscription)).status, 200);
+assert.equal(user.plan, 'business', 'old subscription deletion cannot revoke a replacement subscription');
+const legacy = { ...subscription, id: 'sub_legacy', customer: 'cus_legacy', status: 'active', items: { data: [{ price: { id: 'price_1U4RaDELIgx07EKQcQhv6yWu' } }] } };
+assert.equal((await deliver('customer.subscription.created', legacy, 'legacy-test-secret')).status, 200);
+assert.equal(tables.stripe_entitlements.find((row) => row.stripe_customer_id === 'cus_legacy').plan, 'pro');
+assert.equal((await deliver('customer.subscription.created', legacy, 'wrong-secret')).status, 400);
+const entitlementCount = tables.stripe_entitlements.length;
+assert.equal((await deliver('customer.subscription.created', subscription, 'sandbox-test-secret', false)).status, 200);
+assert.equal(tables.stripe_entitlements.length, entitlementCount, 'sandbox events cannot write production entitlements');
+assert.equal((await deliver('customer.subscription.created', subscription, 'sandbox-test-secret', true)).status, 400);
+assert.equal((await deliver('customer.subscription.created', subscription, 'new-test-secret', false)).status, 400);
+assert.equal((await deliver('charge.dispute.created', { id: 'dp_test', charge: 'ch_test', payment_intent: 'pi_test' })).status, 200);
+assert.equal((await deliver('charge.dispute.created', { id: 'dp_test', charge: 'ch_test', payment_intent: 'pi_test' })).status, 200);
+assert.equal(tables.billing_risk_events.length, 1, 'risk events are idempotent');
+assert.equal(tables.billing_risk_events[0].stripe_charge_id, 'ch_test');
+assert.equal((await deliver('charge.refunded', { id: 'ch_refund', customer, invoice: 'in_test' })).status, 200);
+assert.equal((await deliver('radar.early_fraud_warning.created', { id: 'issfr_test', charge: 'ch_test' })).status, 200);
+assert.equal(tables.billing_risk_events.length, 3);
+console.log('Billing webhook lifecycle tests passed');

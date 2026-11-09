@@ -8,7 +8,7 @@
   <meta name="description" content="Create or manage your PlanSentry account and subscription.">
   <link rel="icon" href="/icon.svg">
   <link rel="stylesheet" href="/marketing.css?v=2">
-  <link rel="stylesheet" href="/account.css?v=4">
+  <link rel="stylesheet" href="/account.css?v=5">
   <link rel="stylesheet" href="/product-footer.css?v=1">
 <link rel="stylesheet" href="/redline-theme.css?v=1">
 </head>
@@ -47,7 +47,7 @@
         <button class="auth-link" id="forgot-password" type="button">Forgot your password?</button>
         <div class="auth-msg" id="auth-msg" role="status" aria-live="polite">
 </div>
-        <p class="auth-fineprint">New accounts require email confirmation. If you purchased a plan, use the same email address from Stripe Checkout.</p>
+        <p class="auth-fineprint">New accounts require email confirmation before checkout.</p>
       </section>
       <section class="auth-card member-card" id="member-card" aria-labelledby="member-title" hidden>
         <div class="member-header">
@@ -155,6 +155,7 @@
 <p>Manage payment methods, invoices, and your subscription securely through Stripe.</p>
 </div>
 <div class="billing-actions">
+<button class="btn primary" id="start-checkout" type="button" hidden>Continue to checkout</button>
 <button class="btn secondary" id="billing-portal" type="button">Manage billing</button>
 <a class="btn secondary" href="/#pricing">View plans</a>
 </div>
@@ -165,7 +166,7 @@
     </main>
   </div>
   <footer class="product-footer"><span>© 2026 PlanSentry</span><a href="/status.html">Status</a><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></footer>
-  <script src="/account.js?v=7">
+  <script src="/account.js?v=8">
 </script>
 </body>
 </html>

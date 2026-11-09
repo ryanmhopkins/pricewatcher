@@ -4,6 +4,7 @@ const EMAIL_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-email`;
 const PUBLISHABLE_KEY = 'sb_publishable_QCWt9V-_up-ePCszAB9S1A_k2-bPOQj';
 const CALLBACK_URL = 'https://plansentry.com/account.html';
 const BILLING_PORTAL_URL = `${SUPABASE_URL}/functions/v1/pricewatcher-billing-portal`;
+const CHECKOUT_URL = `${SUPABASE_URL}/functions/v1/plansentry-checkout`;
 
 let mode = 'signin';
 let accessToken = localStorage.getItem('pw_access_token') || '';
@@ -14,7 +15,7 @@ const memberCard = $('#member-card');
 const message = $('#auth-msg');
 const params = new URLSearchParams(location.search);
 const purchased = params.get('checkout') === 'success';
-const purchasedPlan = params.get('plan');
+const selectedPlan = ['growth', 'business'].includes(params.get('plan')) ? params.get('plan') : null;
 
 function setMessage(text, type = '') {
   message.textContent = text;
@@ -213,6 +214,11 @@ async function showMember(recovery = false) {
     $('#member-plan').textContent = String(account.plan || 'free').replace(/^./, (letter) => letter.toUpperCase());
     $('#member-usage').textContent = account.limit === null ? `${account.monitor_count || 0} / Unlimited` : `${account.monitor_count || 0} / ${account.limit || 0}`;
     $('#member-status').textContent = account.subscription_status || ((account.plan || 'free') === 'free' ? 'Free' : 'Active');
+    const canSubscribe = account.plan === 'free' && selectedPlan;
+    const checkoutButton = $('#start-checkout');
+    checkoutButton.hidden = !canSubscribe;
+    if (canSubscribe) checkoutButton.textContent = `Continue to ${selectedPlan[0].toUpperCase()}${selectedPlan.slice(1)} checkout`;
+    $('#billing-portal').hidden = !account.stripe_customer_id;
     $('#email-frequency').value = account.email_unsubscribed_at ? 'off' : (account.email_frequency || 'immediate');
     $('#email-severity').value = account.email_min_severity || 'low';
     loadEmailDeliveries();
@@ -270,7 +276,8 @@ $('#auth-form').addEventListener('submit', async (event) => {
       storeSession(await authRequest('/auth/v1/token?grant_type=password', { email, password }));
       await showMember();
     } else {
-      const data = await authRequest(`/auth/v1/signup?redirect_to=${encodeURIComponent(CALLBACK_URL)}`, { email, password });
+      const confirmationUrl = selectedPlan ? `${CALLBACK_URL}?plan=${selectedPlan}` : CALLBACK_URL;
+      const data = await authRequest(`/auth/v1/signup?redirect_to=${encodeURIComponent(confirmationUrl)}`, { email, password });
       if (data.access_token) {
         storeSession(data);
         await showMember();
@@ -361,6 +368,31 @@ $('#test-email').addEventListener('click', async (event) => {
 
 $('#refresh-deliveries').addEventListener('click', loadEmailDeliveries);
 
+$('#start-checkout').addEventListener('click', async () => {
+  if (!selectedPlan) return;
+  const button = $('#start-checkout');
+  button.disabled = true;
+  setSettingsMessage('#billing-msg', 'Opening secure checkout…');
+  try {
+    const start = async () => {
+      const response = await fetch(CHECKOUT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${accessToken}` },
+        body: JSON.stringify({ plan: selectedPlan }),
+      });
+      const data = await response.json().catch(() => ({}));
+      return { response, data };
+    };
+    let result = await start();
+    if (result.response.status === 401 && await refreshSession()) result = await start();
+    if (!result.response.ok || !result.data.url) throw new Error(result.data.error || 'Unable to start checkout. Please try again.');
+    window.location.assign(result.data.url);
+  } catch (error) {
+    button.disabled = false;
+    setSettingsMessage('#billing-msg', error.message || 'Unable to start checkout.', 'error');
+  }
+});
+
 $('#billing-portal').addEventListener('click', async () => {
   const button = $('#billing-portal');
   const originalText = button.textContent;
@@ -399,7 +431,5 @@ setMode(mode);
 if (accessToken) {
   showMember();
 } else if (purchased) {
-  setMode('signup');
-  const planName = purchasedPlan ? ` for ${purchasedPlan[0].toUpperCase()}${purchasedPlan.slice(1)}` : '';
-  setMessage(`Payment received${planName}. Create your account using the same email address you used at checkout.`, 'success');
+  setMessage('Checkout completed. Sign in to see your subscription status.', 'success');
 }

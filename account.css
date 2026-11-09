@@ -40,6 +40,7 @@
 .settings-control{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start}.settings-control input{margin:0}.settings-control .btn{white-space:nowrap;padding:13px 14px}
 .settings-msg{min-height:16px;margin-top:9px;font-size:10px;color:#9ca1ab}.settings-msg.success{color:#9ee6b4}.settings-msg.error{color:#fca5a5}
 .billing-section{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:18px}.billing-actions{display:flex;gap:7px;flex:0 0 auto}.billing-actions .btn{text-align:center;white-space:nowrap}
+.billing-actions [hidden]{display:none!important}.billing-actions button{border:0;cursor:pointer}.billing-actions button:disabled{opacity:.55;cursor:wait}
 .delivery-section{grid-column:span 1}
 
 @media(max-width:900px){.settings-sections{grid-template-columns:1fr}.billing-section{grid-column:1}.account-grid{grid-template-columns:1fr 1fr}}
