@@ -15,6 +15,24 @@ const tables = {
 let handler;
 const fetch = async (url, init = {}) => {
   const parsed = new URL(url);
+  if (parsed.pathname.endsWith('/rpc/link_plansentry_checkout')) {
+    const { p_customer_id, p_subscription_id, p_user_id, p_email } = JSON.parse(init.body);
+    let entitlement = tables.stripe_entitlements.find((row) => row.stripe_customer_id === p_customer_id);
+    if (!entitlement) {
+      entitlement = { stripe_customer_id: p_customer_id, stripe_subscription_id: p_subscription_id, email: p_email, plan: 'free', subscription_status: 'pending' };
+      tables.stripe_entitlements.push(entitlement);
+    }
+    const matched = tables.user_accounts.filter((row) => p_user_id ? row.user_id === p_user_id : row.stripe_customer_id === p_customer_id);
+    matched.forEach((row) => Object.assign(row, {
+      stripe_customer_id: p_customer_id,
+      stripe_subscription_id: entitlement.stripe_subscription_id || p_subscription_id,
+      stripe_price_id: entitlement.stripe_price_id || null,
+      plan: entitlement.plan,
+      subscription_status: entitlement.subscription_status,
+      current_period_end: entitlement.current_period_end || null,
+    }));
+    return new Response(null, { status: 204 });
+  }
   const table = parsed.pathname.split('/').at(-1);
   const rows = tables[table];
   assert.ok(rows, `Unexpected table ${table}`);
@@ -57,15 +75,22 @@ async function deliver(type, object, secret = 'new-test-secret', livemode = true
 }
 const customer = 'cus_new_test';
 const user = tables.user_accounts[0];
-const checkout = { customer, subscription: 'sub_new', client_reference_id: user.user_id, customer_details: { email: user.email }, metadata: { plan: 'business' } };
+const checkout = { customer, subscription: 'sub_new', client_reference_id: user.user_id, customer_details: { email: 'billing@example.test' }, metadata: { plan: 'business' } };
 assert.equal((await deliver('checkout.session.completed', checkout)).status, 200);
 assert.equal(user.plan, 'free', 'checkout metadata cannot grant a paid plan');
 const subscription = { id: 'sub_new', customer, status: 'active', items: { data: [{ price: { id: 'price_1UZZ3lLoEh09m2mcjIg1nsEZ' }, current_period_end: 2000000000 }] } };
 assert.equal((await deliver('customer.subscription.created', subscription)).status, 200);
 assert.equal(user.plan, 'growth');
+assert.equal(user.email, 'owner@example.test', 'Stripe billing email cannot replace the sign-in email');
 assert.ok(user.current_period_end, 'item-level period end is recorded');
 assert.equal((await deliver('checkout.session.completed', checkout)).status, 200);
 assert.equal(user.plan, 'growth', 'late checkout cannot downgrade an entitlement');
+const secondUser = { user_id: '22222222-2222-4222-8222-222222222222', email: 'second@example.test', plan: 'free' };
+tables.user_accounts.push(secondUser);
+const secondSubscription = { ...subscription, id: 'sub_second', customer: 'cus_second' };
+assert.equal((await deliver('customer.subscription.created', secondSubscription)).status, 200);
+assert.equal((await deliver('checkout.session.completed', { customer: 'cus_second', subscription: 'sub_second', client_reference_id: secondUser.user_id })).status, 200);
+assert.equal(secondUser.plan, 'growth', 'subscription arriving before checkout still grants access');
 subscription.items.data[0].price.id = 'price_1UZZ3oLoEh09m2mcDKSem4SN';
 assert.equal((await deliver('customer.subscription.updated', subscription)).status, 200);
 assert.equal(user.plan, 'business');

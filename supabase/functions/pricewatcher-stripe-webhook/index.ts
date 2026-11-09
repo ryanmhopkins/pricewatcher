@@ -63,6 +63,20 @@ async function update(table: string, query: string, value: unknown) {
   return response.json();
 }
 
+async function linkCheckout(customerId: string, subscriptionId: string | null, userId: string | null, email: string | null) {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/link_plansentry_checkout`, {
+    method: "POST",
+    headers: HEADERS,
+    body: JSON.stringify({
+      p_customer_id: customerId,
+      p_subscription_id: subscriptionId,
+      p_user_id: userId && UUID_RE.test(userId) ? userId : null,
+      p_email: email,
+    }),
+  });
+  if (!response.ok) throw new Error(await response.text());
+}
+
 async function hmac(secret: string, message: string) {
   const key = await crypto.subtle.importKey(
     "raw",
@@ -100,11 +114,15 @@ function paidPlan(status: string, priceId: string | null, metadata: Record<strin
 // email. user_id match is attempted first and, if it hits, short-circuits
 // the email fallback so we never patch two different accounts for one event.
 async function syncUserAccounts(entitlement: Record<string, unknown>, userId?: string | null, allowEmailFallback = true) {
+  // Stripe's billing email identifies a legacy account when necessary, but
+  // changing it must not alter the user's Supabase sign-in email.
+  const accountEntitlement = { ...entitlement };
+  delete accountEntitlement.email;
   if (userId && UUID_RE.test(userId)) {
     const matched = await update(
       "user_accounts",
       `user_id=eq.${encodeURIComponent(userId)}`,
-      entitlement,
+      accountEntitlement,
     );
     if (Array.isArray(matched) && matched.length) return;
   }
@@ -112,7 +130,7 @@ async function syncUserAccounts(entitlement: Record<string, unknown>, userId?: s
     const matched = await update(
       "user_accounts",
       `stripe_customer_id=eq.${encodeURIComponent(String(entitlement.stripe_customer_id))}`,
-      entitlement,
+      accountEntitlement,
     );
     if (Array.isArray(matched) && matched.length) return;
   }
@@ -120,7 +138,7 @@ async function syncUserAccounts(entitlement: Record<string, unknown>, userId?: s
     await update(
       "user_accounts",
       `email=ilike.${encodeURIComponent(String(entitlement.email))}`,
-      entitlement,
+      accountEntitlement,
     );
   }
 }
@@ -228,6 +246,10 @@ Deno.serve(async (request) => {
       const email = object.customer_details?.email || object.customer_email || null;
       const clientReferenceId = typeof object.client_reference_id === "string" ? object.client_reference_id : null;
       if (customerId) {
+        if (!allowEmailFallback) {
+          await linkCheckout(customerId, subscriptionId || null, clientReferenceId, email);
+          return json({ received: true });
+        }
         const existing = (await select(`stripe_entitlements?stripe_customer_id=eq.${encodeURIComponent(customerId)}&select=*&limit=1`))[0];
         if (existing) {
           // Subscription events can arrive before checkout completion. Never downgrade
